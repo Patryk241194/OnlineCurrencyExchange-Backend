@@ -6,8 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class OnlineCurrencyExchangeBackendApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(OnlineCurrencyExchangeBackendApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(OnlineCurrencyExchangeBackendApplication.class, args);
+    }
 
 }
