@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -99,6 +100,18 @@ class CurrencyRepositoryTest {
         assertEquals(2, currency.getExchangeRates().size());
         assertEquals(currency.getCode(), exchangeRate1.getCurrency().getCode());
         assertEquals(currency.getCode(), exchangeRate2.getCurrency().getCode());
+    }
+
+    @Test
+    void findByCodeTest() {
+        // When
+        Optional<Currency> foundCurrencyOptional = currencyRepository.findByCode(currency.getCode());
+
+        // Then
+        assertTrue(foundCurrencyOptional.isPresent());
+        Currency foundCurrency = foundCurrencyOptional.get();
+        assertEquals(currency.getCode(), foundCurrency.getCode());
+        assertEquals(currency.getName(), foundCurrency.getName());
     }
 
 

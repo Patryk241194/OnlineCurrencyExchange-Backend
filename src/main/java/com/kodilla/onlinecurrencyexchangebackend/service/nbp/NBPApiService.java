@@ -4,6 +4,7 @@ import com.kodilla.onlinecurrencyexchangebackend.domain.Currency;
 import com.kodilla.onlinecurrencyexchangebackend.domain.ExchangeRate;
 import com.kodilla.onlinecurrencyexchangebackend.dto.nbp.RateDto;
 import com.kodilla.onlinecurrencyexchangebackend.nbp.client.NBPApiClient;
+import com.kodilla.onlinecurrencyexchangebackend.nbp.tables.NBPTableType;
 import com.kodilla.onlinecurrencyexchangebackend.repository.CurrencyRepository;
 import com.kodilla.onlinecurrencyexchangebackend.repository.ExchangeRateRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,14 +22,24 @@ public class NBPApiService {
     private final ExchangeRateRepository exchangeRateRepository;
     private final CurrencyRepository currencyRepository;
 
-    private void saveRatesToDatabase(List<RateDto> ratesC, List<RateDto> ratesA) {
-        LocalDate effectiveDate = LocalDate.now();
-
+    private void saveRatesToDatabase(List<RateDto> ratesC, List<RateDto> ratesA, LocalDate effectiveDate) {
         for (RateDto rateC : ratesC) {
-            Currency currency = new Currency();
-            currency.setCode(rateC.getCode());
-            currency.setName(rateC.getCurrency());
-            currencyRepository.save(currency);
+            Optional<Currency> existingCurrency = currencyRepository.findByCode(rateC.getCode());
+
+            Currency currency;
+            if (existingCurrency.isPresent()) {
+                currency = existingCurrency.get();
+            } else {
+                currency = new Currency();
+                currency.setCode(rateC.getCode());
+                currency.setName(rateC.getCurrency());
+                currencyRepository.save(currency);
+            }
+
+            Optional<ExchangeRate> existingExchangeRate = exchangeRateRepository.findByCurrencyAndEffectiveDate(currency, effectiveDate);
+            if (existingExchangeRate.isPresent()) {
+                return;
+            }
 
             ExchangeRate exchangeRate = new ExchangeRate();
             exchangeRate.setCurrency(currency);
@@ -48,8 +59,15 @@ public class NBPApiService {
     }
 
     public void updateCurrencyRates() {
-        List<RateDto> ratesC = nbpApiClient.fetchRatesFromTable("C");
-        List<RateDto> ratesA = nbpApiClient.fetchRatesFromTable("A");
-        saveRatesToDatabase(ratesC, ratesA);
+        LocalDate effectiveDate = LocalDate.now();
+        List<RateDto> ratesC = nbpApiClient.fetchRatesFromTable(NBPTableType.C.getCode(), effectiveDate);
+        List<RateDto> ratesA = nbpApiClient.fetchRatesFromTable(NBPTableType.A.getCode(), effectiveDate);
+        saveRatesToDatabase(ratesC, ratesA, effectiveDate);
+    }
+
+    public void updateCurrencyRatesWithDate(LocalDate effectiveDate) {
+        List<RateDto> ratesC = nbpApiClient.fetchRatesFromTable(NBPTableType.C.getCode(), effectiveDate);
+        List<RateDto> ratesA = nbpApiClient.fetchRatesFromTable(NBPTableType.A.getCode(), effectiveDate);
+        saveRatesToDatabase(ratesC, ratesA, effectiveDate);
     }
 }

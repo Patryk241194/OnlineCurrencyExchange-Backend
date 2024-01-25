@@ -11,6 +11,7 @@ import javax.transaction.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -77,5 +78,21 @@ class ExchangeRateRepositoryTest {
 
         // Then
         assertFalse(exchangeRateRepository.existsById(id));
+    }
+
+    @Test
+    void findByCurrencyAndEffectiveDateTest() {
+        // When
+        Optional<ExchangeRate> foundExchangeRateOptional = exchangeRateRepository.findByCurrencyAndEffectiveDate(currency, exchangeRate.getEffectiveDate());
+
+        // Then
+        assertTrue(foundExchangeRateOptional.isPresent());
+        ExchangeRate foundExchangeRate = foundExchangeRateOptional.get();
+        assertEquals(exchangeRate.getId(), foundExchangeRate.getId());
+        assertEquals(exchangeRate.getSellingRate(), foundExchangeRate.getSellingRate());
+        assertEquals(exchangeRate.getBuyingRate(), foundExchangeRate.getBuyingRate());
+        assertEquals(exchangeRate.getAverageRate(), foundExchangeRate.getAverageRate());
+        assertEquals(exchangeRate.getEffectiveDate(), foundExchangeRate.getEffectiveDate());
+        assertEquals(exchangeRate.getCurrency().getId(), foundExchangeRate.getCurrency().getId());
     }
 }

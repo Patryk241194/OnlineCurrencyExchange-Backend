@@ -8,22 +8,16 @@ import com.kodilla.onlinecurrencyexchangebackend.service.nbp.NBPApiService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.MySQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.utility.DockerImageName;
 
 import javax.transaction.Transactional;
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@Testcontainers
 @SpringBootTest
 @Transactional
-class NBPApiServiceIntegrationTest {
+class NBPApiServiceIntegrationTestWithRealDatabase {
 
     @Autowired
     private NBPApiService nbpApiService;
@@ -31,16 +25,6 @@ class NBPApiServiceIntegrationTest {
     private ExchangeRateRepository exchangeRateRepository;
     @Autowired
     private CurrencyRepository currencyRepository;
-
-    @Container
-    static MySQLContainer mySQLContainer = new MySQLContainer<>(DockerImageName.parse("mysql:8.0"));
-
-    @DynamicPropertySource
-    static void databaseProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", mySQLContainer::getJdbcUrl);
-        registry.add("spring.datasource.username", mySQLContainer::getUsername);
-        registry.add("spring.datasource.password", mySQLContainer::getPassword);
-    }
 
     @Test
     void shouldSaveRatesToDatabase() {
@@ -56,5 +40,39 @@ class NBPApiServiceIntegrationTest {
         // Then
         assertEquals(13, listOfCurrencies.size());
         assertEquals(13, listOfExchangeRates.size());
+    }
+
+    @Test
+    void shouldSaveRatesToDatabaseDuringBusinessDay() {
+        // Given
+        LocalDate effectiveDate = LocalDate.of(2024, 01, 23);
+        nbpApiService.updateCurrencyRatesWithDate(effectiveDate);
+
+        // When
+        List<Currency> listOfCurrencies = currencyRepository.findAll();
+        List<ExchangeRate> listOfExchangeRates = exchangeRateRepository.findAll();
+        System.out.println(listOfCurrencies);
+        System.out.println(listOfExchangeRates);
+
+        // Then
+        assertEquals(13, listOfCurrencies.size());
+        assertEquals(13, listOfExchangeRates.size());
+    }
+
+    @Test
+    void shouldNotSaveRatesToDatabaseWithDuringWeekendDay() {
+        // Given
+        LocalDate effectiveDate = LocalDate.of(2024, 01, 21);
+        nbpApiService.updateCurrencyRatesWithDate(effectiveDate);
+
+        // When
+        List<Currency> listOfCurrencies = currencyRepository.findAll();
+        List<ExchangeRate> listOfExchangeRates = exchangeRateRepository.findAll();
+        System.out.println(listOfCurrencies);
+        System.out.println(listOfExchangeRates);
+
+        // Then
+        assertEquals(0, listOfCurrencies.size());
+        assertEquals(0, listOfExchangeRates.size());
     }
 }

@@ -3,6 +3,7 @@ package com.kodilla.onlinecurrencyexchangebackend.nbp.client;
 import com.kodilla.onlinecurrencyexchangebackend.dto.nbp.RateDto;
 import com.kodilla.onlinecurrencyexchangebackend.dto.nbp.RateListDto;
 import com.kodilla.onlinecurrencyexchangebackend.nbp.config.NBPConfig;
+import com.kodilla.onlinecurrencyexchangebackend.nbp.validator.NBPApiDateValidator;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +12,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -22,6 +24,7 @@ public class NBPApiClient {
     private static final Logger LOGGER = LoggerFactory.getLogger(NBPApiClient.class);
     private final RestTemplate restTemplate;
     private final NBPConfig nbpConfig;
+    private final NBPApiDateValidator nbpApiDateValidator;
 
     private List<RateDto> fetchData(URI apiUrl) {
         try {
@@ -51,8 +54,12 @@ public class NBPApiClient {
         }
     }
 
-    public List<RateDto> fetchRatesFromTable(String tableType) {
-        URI apiUrl = URI.create(nbpConfig.getNbpApiEndpoint() + nbpConfig.getExchangeRates() + nbpConfig.getTables() + tableType + "/?format=json");
+    public List<RateDto> fetchRatesFromTable(String tableType, LocalDate effectiveDate) {
+        if (!nbpApiDateValidator.isValidDate(effectiveDate, tableType)) {
+            return Collections.emptyList();
+        }
+
+        URI apiUrl = URI.create(nbpConfig.getNbpApiEndpoint() + nbpConfig.getExchangeRates() + nbpConfig.getTables() + tableType + "/" + effectiveDate + nbpConfig.getFormatJson());
         LOGGER.info("Fetching data from API: {}", apiUrl);
         List<RateDto> rates = fetchData(apiUrl);
         return rates;

@@ -2,6 +2,7 @@ package com.kodilla.onlinecurrencyexchangebackend.service.nbp;
 
 import com.kodilla.onlinecurrencyexchangebackend.dto.nbp.RateDto;
 import com.kodilla.onlinecurrencyexchangebackend.nbp.client.NBPApiClient;
+import com.kodilla.onlinecurrencyexchangebackend.nbp.tables.NBPTableType;
 import com.kodilla.onlinecurrencyexchangebackend.repository.CurrencyRepository;
 import com.kodilla.onlinecurrencyexchangebackend.repository.ExchangeRateRepository;
 import org.junit.jupiter.api.Test;
@@ -11,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 
@@ -38,8 +40,8 @@ class NBPApiServiceTest {
         List<RateDto> ratesA = Collections.singletonList(createRateDto("USD", null, null, new BigDecimal(3.9)));
 
         // When
-        when(nbpApiClient.fetchRatesFromTable("C")).thenReturn(ratesC);
-        when(nbpApiClient.fetchRatesFromTable("A")).thenReturn(ratesA);
+        when(nbpApiClient.fetchRatesFromTable(NBPTableType.C.getCode(), LocalDate.now())).thenReturn(ratesC);
+        when(nbpApiClient.fetchRatesFromTable(NBPTableType.A.getCode(), LocalDate.now())).thenReturn(ratesA);
         nbpApiService.updateCurrencyRates();
 
         // Then
