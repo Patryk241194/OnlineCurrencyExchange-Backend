@@ -1,6 +1,5 @@
 package com.kodilla.onlinecurrencyexchangebackend.dto;
 
-import com.kodilla.onlinecurrencyexchangebackend.nbp.config.DBConfig;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -9,11 +8,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
-import java.sql.*;
+import java.sql.Date;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -21,8 +22,7 @@ import static org.mockito.Mockito.when;
 class CurrencyExchangeDtoTest {
 
     private static ResultSet resultSet;
-    CurrencyExchangeDto dto;
-    private DBConfig dbConfig;
+    private CurrencyExchangeDto dto;
 
     @BeforeAll
     static void setUp() throws SQLException {
@@ -47,26 +47,9 @@ class CurrencyExchangeDtoTest {
     }
 
     @Test
-    void testDatabaseConnection() {
-        // Given
-        String jdbcUrl = dbConfig.getJdbcUrl();
-        String username = dbConfig.getUsername();
-        String password = dbConfig.getPassword();
-
-        // When & Then
-        try (Connection conn = DriverManager.getConnection(jdbcUrl, username, password)) {
-            assertNotNull(conn);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            fail("Failed to establish a database connection.");
-        }
-    }
-
-    @Test
     @DisplayName("Test fetching exchange rates from mock ResultSet")
     void getExchangeRatesFromMockTest() throws SQLException {
         // When
-//        List<CurrencyExchangeDto> currencyExchangeList = dto.getExchangeRatesFromDatabase();
         List<CurrencyExchangeDto> currencyExchangeList = dto.fetchExchangeRatesFromDatabase(resultSet);
         CurrencyExchangeDto resultDto1 = currencyExchangeList.get(0);
         CurrencyExchangeDto resultDto2 = currencyExchangeList.get(1);

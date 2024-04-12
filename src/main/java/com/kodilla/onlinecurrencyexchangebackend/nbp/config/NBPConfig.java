@@ -23,7 +23,7 @@ public class NBPConfig {
     @Value("${nbp.goldPrice}")
     private String goldPrice;
 
-    @Value("/?format=json")
+    @Value("${nbp.formatJson}")
     private String formatJson;
 
 

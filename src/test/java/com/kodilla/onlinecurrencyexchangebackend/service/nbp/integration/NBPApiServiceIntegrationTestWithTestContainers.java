@@ -2,6 +2,7 @@ package com.kodilla.onlinecurrencyexchangebackend.service.nbp.integration;
 
 import com.kodilla.onlinecurrencyexchangebackend.domain.Currency;
 import com.kodilla.onlinecurrencyexchangebackend.domain.ExchangeRate;
+import com.kodilla.onlinecurrencyexchangebackend.nbp.validator.NBPApiDateValidator;
 import com.kodilla.onlinecurrencyexchangebackend.repository.CurrencyRepository;
 import com.kodilla.onlinecurrencyexchangebackend.repository.ExchangeRateRepository;
 import com.kodilla.onlinecurrencyexchangebackend.service.nbp.NBPApiService;
@@ -29,6 +30,8 @@ class NBPApiServiceIntegrationTestWithTestContainers {
     @Autowired
     private NBPApiService nbpApiService;
     @Autowired
+    private NBPApiDateValidator validator;
+    @Autowired
     private ExchangeRateRepository exchangeRateRepository;
     @Autowired
     private CurrencyRepository currencyRepository;
@@ -55,15 +58,19 @@ class NBPApiServiceIntegrationTestWithTestContainers {
         System.out.println(listOfExchangeRates);
 
         // Then
-        assertEquals(13, listOfCurrencies.size());
-        assertEquals(13, listOfExchangeRates.size());
+        if (validator.isWeekend(LocalDate.now())) {
+            assertEquals(0, listOfCurrencies.size());
+            assertEquals(0, listOfExchangeRates.size());
+        } else {
+            assertEquals(13, listOfCurrencies.size());
+            assertEquals(13, listOfExchangeRates.size());
+        }
     }
 
     @Test
-    void shouldSaveRatesToDatabaseWithDate() {
+    void shouldSaveRatesToDatabaseWithSpecificDate() {
         // Given
-        LocalDate effectiveDate = LocalDate.now().minusDays(1);
-        nbpApiService.updateCurrencyRatesWithDate(effectiveDate);
+        nbpApiService.updateCurrencyRatesWithDate(LocalDate.of(2024, 04, 04));
 
         // When
         List<Currency> listOfCurrencies = currencyRepository.findAll();
@@ -72,6 +79,9 @@ class NBPApiServiceIntegrationTestWithTestContainers {
         System.out.println(listOfExchangeRates);
 
         // Then
+        // Poprawić metody hashCode
+        listOfCurrencies.forEach(System.out::println);
+        listOfExchangeRates.forEach(System.out::println);
         assertEquals(13, listOfCurrencies.size());
         assertEquals(13, listOfExchangeRates.size());
     }

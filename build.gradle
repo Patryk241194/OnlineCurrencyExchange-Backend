@@ -26,14 +26,20 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.hibernate.validator:hibernate-validator'
+	implementation 'com.mysql:mysql-connector-j:8.3.0'
+	implementation 'org.flywaydb:flyway-core:8.5.13'
+	implementation 'org.flywaydb:flyway-mysql:8.5.13'
+	testImplementation 'org.projectlombok:lombok:1.18.22'
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-	runtimeOnly 'com.mysql:mysql-connector-j'
+	runtimeOnly 'org.flywaydb:flyway-gradle-plugin:8.5.13'
+//	runtimeOnly 'com.mysql:mysql-connector-j'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.testcontainers:testcontainers:1.19.3'
+	testImplementation 'org.testcontainers:testcontainers'
 	testImplementation 'org.testcontainers:mysql:1.19.3'
 	testImplementation 'org.testcontainers:junit-jupiter:1.19.3'
+	testImplementation 'org.flywaydb.flyway-test-extensions:flyway-spring-test:10.0.0'
 }
 
 tasks.named('test') {

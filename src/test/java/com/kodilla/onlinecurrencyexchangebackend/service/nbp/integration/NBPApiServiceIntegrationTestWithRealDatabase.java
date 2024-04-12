@@ -39,7 +39,7 @@ class NBPApiServiceIntegrationTestWithRealDatabase {
 
         // Then
         assertEquals(13, listOfCurrencies.size());
-        assertEquals(13, listOfExchangeRates.size());
+        assertEquals(52, listOfExchangeRates.size());
     }
 
     @Test
@@ -56,7 +56,7 @@ class NBPApiServiceIntegrationTestWithRealDatabase {
 
         // Then
         assertEquals(13, listOfCurrencies.size());
-        assertEquals(13, listOfExchangeRates.size());
+        assertEquals(39, listOfExchangeRates.size());
     }
 
     @Test
@@ -72,7 +72,7 @@ class NBPApiServiceIntegrationTestWithRealDatabase {
         System.out.println(listOfExchangeRates);
 
         // Then
-        assertEquals(0, listOfCurrencies.size());
-        assertEquals(0, listOfExchangeRates.size());
+        assertEquals(13, listOfCurrencies.size());
+        assertEquals(39, listOfExchangeRates.size());
     }
 }

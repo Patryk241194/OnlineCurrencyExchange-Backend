@@ -28,7 +28,7 @@ class CurrencyRepositoryTest {
     void setUp() {
         currency = Currency.builder()
                 .code("USD")
-                .name("US Dollar")
+                .name("dolar amerykański")
                 .build();
         currencyRepository.save(currency);
     }
@@ -105,7 +105,7 @@ class CurrencyRepositoryTest {
     @Test
     void findByCodeTest() {
         // When
-        Optional<Currency> foundCurrencyOptional = currencyRepository.findByCode(currency.getCode());
+        Optional<Currency> foundCurrencyOptional = currencyRepository.findFirstByCode(currency.getCode());
 
         // Then
         assertTrue(foundCurrencyOptional.isPresent());
