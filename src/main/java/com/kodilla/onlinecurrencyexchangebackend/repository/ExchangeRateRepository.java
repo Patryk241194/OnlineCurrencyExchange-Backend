@@ -16,6 +16,8 @@ public interface ExchangeRateRepository extends CrudRepository<ExchangeRate, Lon
 
     List<ExchangeRate> findAll();
 
+    List<ExchangeRate> findExchangeRatesByCurrency_Id(Long id);
+
     Optional<ExchangeRate> findByCurrencyAndEffectiveDate(Currency currency, LocalDate effectiveDate);
 
 }
