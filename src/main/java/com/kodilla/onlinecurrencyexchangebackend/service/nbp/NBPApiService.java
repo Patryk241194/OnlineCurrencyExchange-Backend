@@ -7,6 +7,8 @@ import com.kodilla.onlinecurrencyexchangebackend.nbp.client.NBPApiClient;
 import com.kodilla.onlinecurrencyexchangebackend.nbp.tables.NBPTableType;
 import com.kodilla.onlinecurrencyexchangebackend.repository.CurrencyRepository;
 import com.kodilla.onlinecurrencyexchangebackend.repository.ExchangeRateRepository;
+import com.kodilla.onlinecurrencyexchangebackend.service.domain.CurrencyService;
+import com.kodilla.onlinecurrencyexchangebackend.service.domain.ExchangeRateService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,42 +21,13 @@ import java.util.Optional;
 public class NBPApiService {
 
     private final NBPApiClient nbpApiClient;
-    private final ExchangeRateRepository exchangeRateRepository;
-    private final CurrencyRepository currencyRepository;
+    private final ExchangeRateService exchangeRateService;
+    private final CurrencyService currencyService;
 
     private void saveRatesToDatabase(List<RateDto> ratesC, List<RateDto> ratesA, LocalDate effectiveDate) {
         for (RateDto rateC : ratesC) {
-            Optional<Currency> existingCurrency = currencyRepository.findByCode(rateC.getCode());
-
-            Currency currency;
-            if (existingCurrency.isPresent()) {
-                currency = existingCurrency.get();
-            } else {
-                currency = new Currency();
-                currency.setCode(rateC.getCode());
-                currency.setName(rateC.getCurrency());
-                currencyRepository.save(currency);
-            }
-
-            Optional<ExchangeRate> existingExchangeRate = exchangeRateRepository.findByCurrencyAndEffectiveDate(currency, effectiveDate);
-            if (existingExchangeRate.isPresent()) {
-                return;
-            }
-
-            ExchangeRate exchangeRate = new ExchangeRate();
-            exchangeRate.setCurrency(currency);
-            exchangeRate.setEffectiveDate(effectiveDate);
-            exchangeRate.setSellingRate(rateC.getSellingRate());
-            exchangeRate.setBuyingRate(rateC.getBuyingRate());
-
-            Optional<RateDto> correspondingRateA = ratesA.stream()
-                    .filter(rateA -> rateA.getCode().equals(rateC.getCode()))
-                    .findFirst();
-
-            correspondingRateA.ifPresent(rateA -> exchangeRate.setAverageRate(rateA.getAverageRate()));
-
-            exchangeRateRepository.save(exchangeRate);
-
+            Currency currency = currencyService.getOrCreateCurrency(rateC);
+            if (exchangeRateService.getOrCreateExchangeRate(ratesA, effectiveDate, rateC, currency)) return;
         }
     }
 

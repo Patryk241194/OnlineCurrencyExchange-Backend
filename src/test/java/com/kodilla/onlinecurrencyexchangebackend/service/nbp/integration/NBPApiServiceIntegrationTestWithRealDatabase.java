@@ -62,7 +62,7 @@ class NBPApiServiceIntegrationTestWithRealDatabase {
     @Test
     void shouldNotSaveRatesToDatabaseWithDuringWeekendDay() {
         // Given
-        LocalDate effectiveDate = LocalDate.of(2024, 01, 21);
+        LocalDate effectiveDate = LocalDate.of(2024, 04, 28);
         nbpApiService.updateCurrencyRatesWithDate(effectiveDate);
 
         // When
@@ -73,6 +73,6 @@ class NBPApiServiceIntegrationTestWithRealDatabase {
 
         // Then
         assertEquals(13, listOfCurrencies.size());
-        assertEquals(39, listOfExchangeRates.size());
+        assertEquals(52, listOfExchangeRates.size());
     }
 }

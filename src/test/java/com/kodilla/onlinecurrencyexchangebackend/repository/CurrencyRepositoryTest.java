@@ -105,6 +105,18 @@ class CurrencyRepositoryTest {
     @Test
     void findByCodeTest() {
         // When
+        Optional<Currency> foundCurrencyOptional = currencyRepository.findByCode(currency.getCode());
+
+        // Then
+        assertTrue(foundCurrencyOptional.isPresent());
+        Currency foundCurrency = foundCurrencyOptional.get();
+        assertEquals(currency.getCode(), foundCurrency.getCode());
+        assertEquals(currency.getName(), foundCurrency.getName());
+    }
+
+    @Test
+    void findFirstByCodeTest() {
+        // When
         Optional<Currency> foundCurrencyOptional = currencyRepository.findFirstByCode(currency.getCode());
 
         // Then
