@@ -1,5 +1,6 @@
 package com.kodilla.onlinecurrencyexchangebackend.repository;
 
+import com.kodilla.onlinecurrencyexchangebackend.domain.Currency;
 import com.kodilla.onlinecurrencyexchangebackend.domain.User;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
@@ -12,5 +13,7 @@ import java.util.List;
 public interface UserRepository extends CrudRepository<User, Long> {
 
     List<User> findAll();
+
+    List<User> findUsersBySubscribedCurrenciesId(Long currencyId);
 
 }

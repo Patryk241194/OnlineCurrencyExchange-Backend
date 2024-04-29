@@ -27,7 +27,6 @@ public class ExchangeRate {
     private BigDecimal averageRate;
     @Column(name = "EFFECTIVE_DATE")
     private LocalDate effectiveDate;
-
     @ManyToOne
     @JoinColumn(name = "CURRENCY_ID")
     private Currency currency;

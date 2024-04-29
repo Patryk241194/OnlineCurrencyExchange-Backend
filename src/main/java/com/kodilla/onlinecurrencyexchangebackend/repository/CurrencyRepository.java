@@ -14,6 +14,8 @@ public interface CurrencyRepository extends CrudRepository<Currency, Long> {
 
     List<Currency> findAll();
 
+    List<Currency> findCurrenciesBySubscribedUsersId(Long userId);
+
     Optional<Currency> findByCode(String code);
 
     Optional<Currency> findFirstByCode(String code);

@@ -2,7 +2,7 @@ package com.kodilla.onlinecurrencyexchangebackend.mapper;
 
 import com.kodilla.onlinecurrencyexchangebackend.domain.ExchangeRate;
 import com.kodilla.onlinecurrencyexchangebackend.dto.ExchangeRateDto;
-import com.kodilla.onlinecurrencyexchangebackend.service.CurrencyService;
+import com.kodilla.onlinecurrencyexchangebackend.service.domain.CurrencyService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 

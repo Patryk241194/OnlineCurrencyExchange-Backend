@@ -1,4 +1,4 @@
-package com.kodilla.onlinecurrencyexchangebackend.service;
+package com.kodilla.onlinecurrencyexchangebackend.service.domain;
 
 import com.kodilla.onlinecurrencyexchangebackend.domain.Currency;
 import com.kodilla.onlinecurrencyexchangebackend.dto.CurrencyDto;
@@ -17,6 +17,10 @@ public class CurrencyService {
 
     public List<Currency> getAllCurrencies() {
         return currencyRepository.findAll();
+    }
+
+    public List<Currency> getCurrenciesBySubscribedUsersId(Long userId) {
+        return currencyRepository.findCurrenciesBySubscribedUsersId(userId);
     }
 
     public Currency getCurrencyById(final Long currencyId) {

@@ -3,6 +3,8 @@ package com.kodilla.onlinecurrencyexchangebackend.domain;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -26,6 +28,8 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(name = "ROLE")
     private RoleStatus role;
+    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "subscribedUsers")
+    private List<Currency> subscribedCurrencies = new ArrayList<>();
 
     @Override
     public boolean equals(Object o) {

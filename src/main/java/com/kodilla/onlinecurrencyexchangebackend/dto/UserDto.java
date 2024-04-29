@@ -15,4 +15,5 @@ public class UserDto {
     private String lastName;
     private String email;
     private String role;
+    private List<Long> subscribedCurrenciesIds;
 }

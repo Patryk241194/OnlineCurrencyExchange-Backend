@@ -1,4 +1,4 @@
-package com.kodilla.onlinecurrencyexchangebackend.service;
+package com.kodilla.onlinecurrencyexchangebackend.service.domain;
 
 import com.kodilla.onlinecurrencyexchangebackend.domain.Currency;
 import com.kodilla.onlinecurrencyexchangebackend.domain.ExchangeRate;

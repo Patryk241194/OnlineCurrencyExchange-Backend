@@ -14,4 +14,5 @@ public class CurrencyDto {
     private String code;
     private String name;
     private List<Long> exchangeRateIds;
+    private List<Long> subscribedUsersIds;
 }

@@ -32,6 +32,14 @@ public class Currency {
     @Builder.Default
     private List<ExchangeRate> exchangeRates = new ArrayList<>();
 
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "SUBSCRIBED_USERS",
+            joinColumns = {@JoinColumn(name = "CURRENCY_ID", referencedColumnName = "CURRENCY_ID")},
+            inverseJoinColumns = {@JoinColumn(name = "USER_ID", referencedColumnName = "USER_ID")}
+    )
+    private List<User> subscribedUsers = new ArrayList<>();
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

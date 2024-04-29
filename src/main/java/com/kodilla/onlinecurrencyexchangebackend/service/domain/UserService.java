@@ -1,5 +1,6 @@
-package com.kodilla.onlinecurrencyexchangebackend.service;
+package com.kodilla.onlinecurrencyexchangebackend.service.domain;
 
+import com.kodilla.onlinecurrencyexchangebackend.domain.Currency;
 import com.kodilla.onlinecurrencyexchangebackend.domain.RoleStatus;
 import com.kodilla.onlinecurrencyexchangebackend.domain.User;
 import com.kodilla.onlinecurrencyexchangebackend.dto.UserDto;
@@ -18,6 +19,10 @@ public class UserService {
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
+    }
+
+    public List<User> getUsersBySubscribedCurrenciesId(Long currencyId) {
+        return userRepository.findUsersBySubscribedCurrenciesId(currencyId);
     }
 
     public User getUserById(Long userId) {
