@@ -6,10 +6,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -26,6 +28,8 @@ class CurrencyRepositoryTest {
 
     @BeforeEach
     void setUp() {
+        exchangeRateRepository.deleteAll();
+        currencyRepository.deleteAll();
         currency = Currency.builder()
                 .code("USD")
                 .name("dolar amerykański")
@@ -35,9 +39,6 @@ class CurrencyRepositoryTest {
 
     @Test
     void currencyRepositoryCreateTest() {
-        // When
-        currencyRepository.save(currency);
-
         // Then
         Currency foundCurrency = currencyRepository.findById(currency.getId()).orElse(null);
         assertEquals(currency, foundCurrency);
@@ -110,6 +111,20 @@ class CurrencyRepositoryTest {
         // Then
         assertTrue(foundCurrencyOptional.isPresent());
         Currency foundCurrency = foundCurrencyOptional.get();
+        assertEquals(currency.getCode(), foundCurrency.getCode());
+        assertEquals(currency.getName(), foundCurrency.getName());
+
+    }
+
+    @Test
+    void findCurrenciesByCode() {
+        // When
+        List<Currency> foundCurrencies = currencyRepository.findCurrenciesByCode(currency.getCode());
+
+        // Then
+        Currency foundCurrency = foundCurrencies.get(0);
+        System.out.println(foundCurrency.getName());;
+        assertEquals(1, foundCurrencies.size());
         assertEquals(currency.getCode(), foundCurrency.getCode());
         assertEquals(currency.getName(), foundCurrency.getName());
     }

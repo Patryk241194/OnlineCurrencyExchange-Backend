@@ -18,6 +18,8 @@ public interface CurrencyRepository extends CrudRepository<Currency, Long> {
 
     Optional<Currency> findByCode(String code);
 
+    List<Currency> findCurrenciesByCode(String code);
+
     Optional<Currency> findFirstByCode(String code);
 
 }

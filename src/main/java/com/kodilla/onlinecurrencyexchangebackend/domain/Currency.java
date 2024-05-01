@@ -38,6 +38,7 @@ public class Currency {
             joinColumns = {@JoinColumn(name = "CURRENCY_ID", referencedColumnName = "CURRENCY_ID")},
             inverseJoinColumns = {@JoinColumn(name = "USER_ID", referencedColumnName = "USER_ID")}
     )
+    @Builder.Default
     private List<User> subscribedUsers = new ArrayList<>();
 
     @Override

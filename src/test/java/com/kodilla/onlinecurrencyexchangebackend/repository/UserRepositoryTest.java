@@ -1,5 +1,6 @@
 package com.kodilla.onlinecurrencyexchangebackend.repository;
 
+import com.kodilla.onlinecurrencyexchangebackend.domain.Currency;
 import com.kodilla.onlinecurrencyexchangebackend.domain.RoleStatus;
 import com.kodilla.onlinecurrencyexchangebackend.domain.User;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,6 +10,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.transaction.Transactional;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -17,6 +20,8 @@ class UserRepositoryTest {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private CurrencyRepository currencyRepository;
     private User user;
 
     @BeforeEach
@@ -63,5 +68,28 @@ class UserRepositoryTest {
         // Then
         assertFalse(userRepository.existsById(id));
     }
+
+    @Test
+    void ManyToManyRelationBetweenCurrencyAndUserTest() {
+        // Given
+        Currency currency = Currency.builder()
+                .code("USD")
+                .name("dolar amerykański")
+                .build();
+        currencyRepository.save(currency);
+
+        user.getSubscribedCurrencies().add(currency);
+        currency.getSubscribedUsers().add(user);
+        userRepository.save(user);
+        currencyRepository.save(currency);
+
+        // When
+        List<User> foundUsers = userRepository.findUsersBySubscribedCurrenciesId(currency.getId());
+
+        // Then
+        assertFalse(foundUsers.isEmpty());
+        assertTrue(foundUsers.contains(user));
+    }
+
 
 }

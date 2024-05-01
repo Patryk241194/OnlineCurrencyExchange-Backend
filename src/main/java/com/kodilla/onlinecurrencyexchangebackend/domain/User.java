@@ -29,6 +29,7 @@ public class User {
     @Column(name = "ROLE")
     private RoleStatus role;
     @ManyToMany(cascade = CascadeType.ALL, mappedBy = "subscribedUsers")
+    @Builder.Default
     private List<Currency> subscribedCurrencies = new ArrayList<>();
 
     @Override
