@@ -1,4 +1,4 @@
-package com.kodilla.onlinecurrencyexchangebackend.dto;
+package com.kodilla.onlinecurrencyexchangebackend.dto.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,8 +11,7 @@ import java.util.List;
 @Builder
 public class UserDto {
     private Long id;
-    private String firstName;
-    private String lastName;
+    private String username;
     private String email;
     private String role;
     private List<Long> subscribedCurrenciesIds;

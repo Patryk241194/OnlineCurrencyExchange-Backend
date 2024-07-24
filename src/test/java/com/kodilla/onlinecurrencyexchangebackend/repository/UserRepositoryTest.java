@@ -27,9 +27,9 @@ class UserRepositoryTest {
     @BeforeEach
     void setUp() {
         user = User.builder()
-                .firstName("Test Name")
-                .lastName("Test Surname")
+                .username("test_username")
                 .email("test@gmail.com")
+                .password("test_password")
                 .role(RoleStatus.USER)
                 .build();
         userRepository.save(user);
@@ -47,16 +47,16 @@ class UserRepositoryTest {
     @Test
     void userRepositoryUpdateTest() {
         // Given
-        String newFirstName = "Updated Name";
+        String newUsername = "updated_username";
 
         // When
-        user.setFirstName(newFirstName);
+        user.setUsername(newUsername);
         userRepository.save(user);
 
         // Then
         User updatedUser = userRepository.findById(user.getId()).orElse(null);
-        assert updatedUser != null;
-        assertEquals(newFirstName, updatedUser.getFirstName());
+        assertNotNull(updatedUser);
+        assertEquals(newUsername, updatedUser.getUsername());
     }
 
     @Test
