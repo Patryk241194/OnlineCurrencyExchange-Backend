@@ -33,4 +33,6 @@ public class LogMessages {
     public static final String ADMIN_DEMOTED_TO_USER = "Admin {} demoted to USER";
     public static final String FIND_USER_BY_USERNAME = "Finding user by username: {}";
     public static final String USER_FOUND_BY_USERNAME = "User found with username: {}";
+    public static final String FETCHING_ALL_USERS = "Fetching all users";
+    public static final String USERS_FETCHED_SUCCESS = "All users fetched successfully";
 }

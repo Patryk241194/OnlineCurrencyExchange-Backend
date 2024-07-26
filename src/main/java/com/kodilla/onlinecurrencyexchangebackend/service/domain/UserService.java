@@ -81,20 +81,20 @@ public class UserService {
         log.info(USER_DELETED_SUCCESS, username);
     }
 
-    public void promoteUserToAdmin(String username, String token) {
+    public void promoteUserToAdmin(EditUserRequest request, String token) {
         validateAdminToken(token);
-        var user = userRepository.findByUsername(username).orElseThrow(UserNotFoundException::new);
+        var user = userRepository.findByUsername(request.getUsername()).orElseThrow(UserNotFoundException::new);
         user.setRole(RoleStatus.ADMIN);
         userRepository.save(user);
-        log.info(USER_PROMOTED_TO_ADMIN, username);
+        log.info(USER_PROMOTED_TO_ADMIN, request.getUsername());
     }
 
-    public void demoteAdminToUser(String username, String token) {
+    public void demoteAdminToUser(EditUserRequest request, String token) {
         validateAdminToken(token);
-        var user = userRepository.findByUsername(username).orElseThrow(UserNotFoundException::new);
+        var user = userRepository.findByUsername(request.getUsername()).orElseThrow(UserNotFoundException::new);
         user.setRole(RoleStatus.USER);
         userRepository.save(user);
-        log.info(ADMIN_DEMOTED_TO_USER, username);
+        log.info(ADMIN_DEMOTED_TO_USER, request.getUsername());
     }
 
     public UserDetailResponse findUserByUsername(String username) {
@@ -109,6 +109,22 @@ public class UserService {
                 .role(String.valueOf(user.getRole()))
                 .subscribedCurrencies(subscribedCurrencies)
                 .build();
+    }
+
+    public List<UserDetailResponse> getAllUsers() {
+        log.info(FETCHING_ALL_USERS);
+        List<User> users = userRepository.findAll();
+        List<UserDetailResponse> userDetailResponses = users.stream()
+                .map(user -> UserDetailResponse.builder()
+                        .username(user.getUsername())
+                        .role(String.valueOf(user.getRole()))
+                        .subscribedCurrencies(user.getSubscribedCurrencies().stream()
+                                .map(Currency::getCode)
+                                .toList())
+                        .build())
+                .toList();
+        log.info(USERS_FETCHED_SUCCESS);
+        return userDetailResponses;
     }
 
     private void validateUserCredentials(EditUserRequest request) throws Exception {
