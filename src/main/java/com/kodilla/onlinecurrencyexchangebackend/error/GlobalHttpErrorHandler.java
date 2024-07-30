@@ -8,6 +8,7 @@ import com.kodilla.onlinecurrencyexchangebackend.error.exchangerate.ExchangeRate
 import com.kodilla.onlinecurrencyexchangebackend.error.goldprice.GoldPriceNotFoundException;
 import com.kodilla.onlinecurrencyexchangebackend.error.user.UserAlreadyExistsException;
 import com.kodilla.onlinecurrencyexchangebackend.error.user.UserNotFoundException;
+import com.kodilla.onlinecurrencyexchangebackend.error.user.UserNotLoggedInException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -53,7 +54,12 @@ public class GlobalHttpErrorHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(UnauthorizedActionException.class)
-    public ResponseEntity<Object> handleInvalidPasswordException(UnauthorizedActionException ex) {
+    public ResponseEntity<Object> handleUnauthorizedActionException(UnauthorizedActionException ex) {
         return new ResponseEntity<>("User does not have sufficient privileges to perform this action", HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(UserNotLoggedInException.class)
+    public ResponseEntity<Object> handleUserNotLoggedInException(UserNotLoggedInException ex) {
+        return new ResponseEntity<>("User is not logged in", HttpStatus.UNAUTHORIZED);
     }
 }

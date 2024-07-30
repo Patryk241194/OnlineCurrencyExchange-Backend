@@ -3,6 +3,7 @@ package com.kodilla.onlinecurrencyexchangebackend.mapper;
 import com.kodilla.onlinecurrencyexchangebackend.domain.Currency;
 import com.kodilla.onlinecurrencyexchangebackend.domain.ExchangeRate;
 import com.kodilla.onlinecurrencyexchangebackend.domain.User;
+import com.kodilla.onlinecurrencyexchangebackend.dto.CurrencyDisplayDto;
 import com.kodilla.onlinecurrencyexchangebackend.dto.CurrencyDto;
 import com.kodilla.onlinecurrencyexchangebackend.service.domain.ExchangeRateService;
 import com.kodilla.onlinecurrencyexchangebackend.service.domain.UserService;
@@ -33,6 +34,14 @@ public class CurrencyMapper implements Mapper<CurrencyDto, Currency> {
                 currency.getName(),
                 exchangeRateIds,
                 subscribedUsersIds
+        );
+    }
+
+    public CurrencyDisplayDto mapToCurrencyDisplayDto(Currency currency) {
+        return new CurrencyDisplayDto(
+                currency.getId(),
+                currency.getCode(),
+                currency.getName()
         );
     }
 

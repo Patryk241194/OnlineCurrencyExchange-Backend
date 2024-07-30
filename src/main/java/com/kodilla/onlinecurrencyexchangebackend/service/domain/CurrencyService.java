@@ -1,36 +1,59 @@
 package com.kodilla.onlinecurrencyexchangebackend.service.domain;
 
 import com.kodilla.onlinecurrencyexchangebackend.domain.Currency;
-import com.kodilla.onlinecurrencyexchangebackend.dto.CurrencyDto;
+import com.kodilla.onlinecurrencyexchangebackend.dto.CurrencyDisplayDto;
 import com.kodilla.onlinecurrencyexchangebackend.dto.nbp.RateDto;
 import com.kodilla.onlinecurrencyexchangebackend.error.currency.CurrencyNotFoundException;
+import com.kodilla.onlinecurrencyexchangebackend.error.user.UserNotLoggedInException;
+import com.kodilla.onlinecurrencyexchangebackend.mapper.CurrencyMapper;
 import com.kodilla.onlinecurrencyexchangebackend.repository.CurrencyRepository;
+import com.kodilla.onlinecurrencyexchangebackend.repository.UserRepository;
+import com.kodilla.onlinecurrencyexchangebackend.security.jwt.JwtService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
 public class CurrencyService {
 
+    private final UserRepository userRepository;
     private final CurrencyRepository currencyRepository;
+    private final JwtService jwtService;
+    private final CurrencyMapper currencyMapper;
 
-    public List<Currency> getAllCurrencies() {
-        return currencyRepository.findAll();
+    public List<CurrencyDisplayDto> getAllCurrencyDisplayDtos() {
+        List<Currency> currencies = currencyRepository.findAll();
+        return currencies.stream()
+                .map(currencyMapper::mapToCurrencyDisplayDto)
+                .collect(Collectors.toList());
     }
 
-    public List<Currency> getCurrenciesBySubscribedUsersId(Long userId) {
-        return currencyRepository.findCurrenciesBySubscribedUsersId(userId);
+    public void subscribeUserToCurrency(String currencyCode, String token) {
+        String username = jwtService.extractUsername(token);
+        var user = userRepository.findByUsername(username).orElseThrow(UserNotLoggedInException::new);
+        Currency currency = currencyRepository.findByCode(currencyCode).orElseThrow(CurrencyNotFoundException::new);
+        if (!user.getSubscribedCurrencies().contains(currency)) {
+            user.getSubscribedCurrencies().add(currency);
+            currency.getSubscribedUsers().add(user);
+            userRepository.save(user);
+            currencyRepository.save(currency);
+        }
     }
 
-    public Currency getCurrencyById(final Long currencyId) {
-        return currencyRepository.findById(currencyId).orElseThrow(CurrencyNotFoundException::new);
-    }
-
-    public Currency getCurrencyByCode(final String code) {
-        return currencyRepository.findByCode(code).orElseThrow(CurrencyNotFoundException::new);
+    public void unsubscribeUserFromCurrency(String currencyCode, String token) {
+        String username = jwtService.extractUsername(token);
+        var user = userRepository.findByUsername(username).orElseThrow(UserNotLoggedInException::new);
+        Currency currency = currencyRepository.findByCode(currencyCode).orElseThrow(CurrencyNotFoundException::new);
+        if (user.getSubscribedCurrencies().contains(currency)) {
+            user.getSubscribedCurrencies().remove(currency);
+            currency.getSubscribedUsers().remove(user);
+            userRepository.save(user);
+            currencyRepository.save(currency);
+        }
     }
 
     public Currency getOrCreateCurrency(RateDto ratesC) {
@@ -47,24 +70,12 @@ public class CurrencyService {
         }
     }
 
-    public Currency saveCurrency(final Currency currency) {
-        return currencyRepository.save(currency);
+    public List<Currency> getCurrenciesBySubscribedUsersId(Long userId) {
+        return currencyRepository.findCurrenciesBySubscribedUsersId(userId);
     }
 
-    public void deleteCurrencyById(final Long currencyId) {
-        if (!currencyRepository.existsById(currencyId)) {
-            throw new CurrencyNotFoundException();
-        }
-        currencyRepository.deleteById(currencyId);
+    public Currency getCurrencyById(final Long currencyId) {
+        return currencyRepository.findById(currencyId).orElseThrow(CurrencyNotFoundException::new);
     }
 
-    public Currency updateCurrency(final Long currencyId, final CurrencyDto currencyDto) {
-        Currency currency = currencyRepository.findById(currencyId)
-                .orElseThrow(CurrencyNotFoundException::new);
-
-        currency.setCode(currencyDto.getCode());
-        currency.setName(currencyDto.getName());
-
-        return currencyRepository.save(currency);
-    }
 }

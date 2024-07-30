@@ -36,5 +36,4 @@ public class EmailService {
         return mailMessage;
     }
 
-
 }

@@ -2,6 +2,7 @@ package com.kodilla.onlinecurrencyexchangebackend.dto.integration;
 
 import com.kodilla.onlinecurrencyexchangebackend.dto.CurrencyExchangeDto;
 import com.kodilla.onlinecurrencyexchangebackend.nbp.config.DBConfig;
+import com.kodilla.onlinecurrencyexchangebackend.service.domain.CurrencyExchangeService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class CurrencyExchangeDtoIntegrationTestWithRealDatabase {
 
     @Autowired
-    private CurrencyExchangeDto currencyExchangeDto;
+    private CurrencyExchangeService currencyExchangeService;
     @Autowired
     private DBConfig dbConfig;
 
@@ -41,7 +42,7 @@ class CurrencyExchangeDtoIntegrationTestWithRealDatabase {
     @Test
     void shouldGetExchangeRatesFromDatabaseTest() throws SQLException {
         // When
-        List<CurrencyExchangeDto> currencyExchangeList = currencyExchangeDto.getExchangeRatesFromDatabase();
+        List<CurrencyExchangeDto> currencyExchangeList = currencyExchangeService.getExchangeRatesFromDatabase();
 
         // Then
         assertNotNull(currencyExchangeList);
@@ -52,7 +53,7 @@ class CurrencyExchangeDtoIntegrationTestWithRealDatabase {
     @Test
     void shouldGetExchangeRatesByCodeAndDateFromDatabaseTest() throws SQLException {
         // When
-        List<CurrencyExchangeDto> currencyExchangeList = currencyExchangeDto.getExchangeRatesByCodeAndDate("USD", LocalDate.of(2024, 01, 25));
+        List<CurrencyExchangeDto> currencyExchangeList = currencyExchangeService.getExchangeRatesByCodeAndDate("USD", LocalDate.of(2024, 01, 25));
 
         // Then
         assertNotNull(currencyExchangeList);
@@ -69,7 +70,7 @@ class CurrencyExchangeDtoIntegrationTestWithRealDatabase {
         LocalDate endingDate = LocalDate.of(2024, 1, 31);
 
         // When
-        List<CurrencyExchangeDto> currencyExchangeList = currencyExchangeDto.getExchangeRatesByCodeFromDateToDate(currencyCode, startingDate, endingDate);
+        List<CurrencyExchangeDto> currencyExchangeList = currencyExchangeService.getExchangeRatesByCodeFromDateToDate(currencyCode, startingDate, endingDate);
 
         // Then
         assertNotNull(currencyExchangeList);
@@ -83,7 +84,7 @@ class CurrencyExchangeDtoIntegrationTestWithRealDatabase {
         LocalDate effectiveDate = LocalDate.of(2024, 1, 23);
 
         // When
-        List<CurrencyExchangeDto> currencyExchangeList = currencyExchangeDto.getExchangeRatesByDate(effectiveDate);
+        List<CurrencyExchangeDto> currencyExchangeList = currencyExchangeService.getExchangeRatesByDate(effectiveDate);
 
         // Then
         assertNotNull(currencyExchangeList);

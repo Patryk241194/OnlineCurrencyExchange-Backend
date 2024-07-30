@@ -1,5 +1,6 @@
 package com.kodilla.onlinecurrencyexchangebackend.dto;
 
+import com.kodilla.onlinecurrencyexchangebackend.service.domain.CurrencyExchangeService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -19,10 +20,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class CurrencyExchangeDtoTest {
+class CurrencyExchangeServiceTest {
 
     private static ResultSet resultSet;
-    private CurrencyExchangeDto dto;
+    private CurrencyExchangeService service;
 
     @BeforeAll
     static void setUp() throws SQLException {
@@ -43,14 +44,14 @@ class CurrencyExchangeDtoTest {
 
     @BeforeEach
     void init() {
-        dto = new CurrencyExchangeDto();
+        service = new CurrencyExchangeService();
     }
 
     @Test
     @DisplayName("Test fetching exchange rates from mock ResultSet")
     void getExchangeRatesFromMockTest() throws SQLException {
         // When
-        List<CurrencyExchangeDto> currencyExchangeList = dto.fetchExchangeRatesFromDatabase(resultSet);
+        List<CurrencyExchangeDto> currencyExchangeList = service.fetchExchangeRatesFromDatabase(resultSet);
         CurrencyExchangeDto resultDto1 = currencyExchangeList.get(0);
         CurrencyExchangeDto resultDto2 = currencyExchangeList.get(1);
         System.out.println(resultDto1);

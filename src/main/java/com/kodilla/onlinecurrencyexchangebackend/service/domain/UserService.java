@@ -156,4 +156,7 @@ public class UserService {
         }
     }
 
+    public List<User> getUsersBySubscribedCurrenciesId(Long id) {
+        return userRepository.findUsersBySubscribedCurrenciesId(id);
+    }
 }
