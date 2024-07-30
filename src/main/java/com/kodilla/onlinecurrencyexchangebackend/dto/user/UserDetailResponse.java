@@ -13,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 public class UserDetailResponse {
     private String username;
+    private String email;
     private String role;
     private List<String> subscribedCurrencies;
 }

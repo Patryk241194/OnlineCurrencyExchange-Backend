@@ -35,4 +35,9 @@ public class LogMessages {
     public static final String USER_FOUND_BY_USERNAME = "User found with username: {}";
     public static final String FETCHING_ALL_USERS = "Fetching all users";
     public static final String USERS_FETCHED_SUCCESS = "All users fetched successfully";
+
+    // EmailService
+    public static final String PREPARING_EMAIL_LOG = "Preparing to send email to user: {}";
+    public static final String EMAIL_SENT_SUCCESS_LOG = "Email has been sent.";
+    public static final String EMAIL_SENDING_FAILURE_LOG = "Failed to process email sending: {}";
 }

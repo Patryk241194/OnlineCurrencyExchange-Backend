@@ -106,6 +106,7 @@ public class UserService {
         log.info(USER_FOUND_BY_USERNAME, username);
         return UserDetailResponse.builder()
                 .username(user.getUsername())
+                .email(user.getEmail())
                 .role(String.valueOf(user.getRole()))
                 .subscribedCurrencies(subscribedCurrencies)
                 .build();
@@ -117,6 +118,7 @@ public class UserService {
         List<UserDetailResponse> userDetailResponses = users.stream()
                 .map(user -> UserDetailResponse.builder()
                         .username(user.getUsername())
+                        .email(user.getEmail())
                         .role(String.valueOf(user.getRole()))
                         .subscribedCurrencies(user.getSubscribedCurrencies().stream()
                                 .map(Currency::getCode)

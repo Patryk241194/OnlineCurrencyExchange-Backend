@@ -9,6 +9,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+import static com.kodilla.onlinecurrencyexchangebackend.security.log.LogMessages.EMAIL_SENDING_FAILURE_LOG;
+import static com.kodilla.onlinecurrencyexchangebackend.security.log.LogMessages.EMAIL_SENT_SUCCESS_LOG;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -17,13 +20,12 @@ public class EmailService {
     private final JavaMailSender javaMailSender;
 
     public void send(final Mail mail) {
-        log.info("Starting email preparation...");
         try {
             SimpleMailMessage mailMessage = createMailMessage(mail);
             javaMailSender.send(mailMessage);
-            log.info("Email has been sent.");
+            log.info(EMAIL_SENT_SUCCESS_LOG);
         } catch (MailException e) {
-            log.error("Failed to process email sending: " + e.getMessage(), e);
+            log.error(EMAIL_SENDING_FAILURE_LOG + e.getMessage(), e);
         }
     }
 
