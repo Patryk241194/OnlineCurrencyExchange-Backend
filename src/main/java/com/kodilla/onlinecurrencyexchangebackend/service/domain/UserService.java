@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
+import java.util.Set;
 
 import static com.kodilla.onlinecurrencyexchangebackend.security.log.LogMessages.*;
 
@@ -158,7 +159,7 @@ public class UserService {
         }
     }
 
-    public List<User> getUsersBySubscribedCurrenciesId(Long id) {
+    public Set<User> getUsersBySubscribedCurrenciesId(Long id) {
         return userRepository.findUsersBySubscribedCurrenciesId(id);
     }
 }

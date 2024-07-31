@@ -6,9 +6,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 @Getter
 @Setter
@@ -32,9 +30,9 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     @Column(name = "ROLE")
     private RoleStatus role;
-    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "subscribedUsers")
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "subscribedUsers")
     @Builder.Default
-    private List<Currency> subscribedCurrencies = new ArrayList<>();
+    private Set<Currency> subscribedCurrencies = new HashSet<>();
 
     @Override
     public boolean equals(Object o) {

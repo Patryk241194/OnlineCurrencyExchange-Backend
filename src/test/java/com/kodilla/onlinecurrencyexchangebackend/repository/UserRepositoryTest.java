@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import javax.transaction.Transactional;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -84,7 +85,7 @@ class UserRepositoryTest {
         currencyRepository.save(currency);
 
         // When
-        List<User> foundUsers = userRepository.findUsersBySubscribedCurrenciesId(currency.getId());
+        Set<User> foundUsers = userRepository.findUsersBySubscribedCurrenciesId(currency.getId());
 
         // Then
         assertFalse(foundUsers.isEmpty());

@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -70,7 +71,7 @@ public class CurrencyService {
         }
     }
 
-    public List<Currency> getCurrenciesBySubscribedUsersId(Long userId) {
+    public Set<Currency> getCurrenciesBySubscribedUsersId(Long userId) {
         return currencyRepository.findCurrenciesBySubscribedUsersId(userId);
     }
 

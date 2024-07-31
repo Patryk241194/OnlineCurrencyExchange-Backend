@@ -4,7 +4,9 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -39,7 +41,7 @@ public class Currency {
             inverseJoinColumns = {@JoinColumn(name = "USER_ID", referencedColumnName = "USER_ID")}
     )
     @Builder.Default
-    private List<User> subscribedUsers = new ArrayList<>();
+    private Set<User> subscribedUsers = new HashSet<>();
 
     @Override
     public boolean equals(Object o) {

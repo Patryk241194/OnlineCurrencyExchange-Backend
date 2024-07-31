@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 @Transactional
@@ -14,7 +15,7 @@ public interface CurrencyRepository extends CrudRepository<Currency, Long> {
 
     List<Currency> findAll();
 
-    List<Currency> findCurrenciesBySubscribedUsersId(Long userId);
+    Set<Currency> findCurrenciesBySubscribedUsersId(Long userId);
 
     Optional<Currency> findByCode(String code);
 
