@@ -2,6 +2,7 @@ package com.kodilla.onlinecurrencyexchangebackend.service.domain;
 
 import com.kodilla.onlinecurrencyexchangebackend.dto.CurrencyExchangeDto;
 import com.kodilla.onlinecurrencyexchangebackend.nbp.config.DBConfig;
+import com.kodilla.onlinecurrencyexchangebackend.nbp.scheduler.NBPScheduler;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +14,10 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
+
+import static com.kodilla.onlinecurrencyexchangebackend.nbp.scheduler.NBPScheduler.*;
+import static com.kodilla.onlinecurrencyexchangebackend.security.log.LogMessages.*;
 
 @Slf4j
 @Service
@@ -52,7 +57,7 @@ public class CurrencyExchangeService {
             return fetchExchangeRatesFromDatabase(rs);
         } catch (SQLException e) {
             e.printStackTrace();
-            log.error("Error while fetching exchange rates from the database", e);
+            log.error(ERROR_FETCHING_RATES, e);
             return Collections.emptyList();
         }
     }
@@ -68,7 +73,7 @@ public class CurrencyExchangeService {
             return fetchExchangeRatesFromDatabase(rs);
         } catch (SQLException e) {
             e.printStackTrace();
-            log.error("Error while fetching exchange rates by code and date from the database", e);
+            log.error(ERROR_FETCHING_RATES_BY_CODE_AND_DATE, e);
             return Collections.emptyList();
         }
     }
@@ -85,7 +90,7 @@ public class CurrencyExchangeService {
             return fetchExchangeRatesFromDatabase(rs);
         } catch (SQLException e) {
             e.printStackTrace();
-            log.error("Error while fetching exchange rates by code and date range from the database", e);
+            log.error(ERROR_FETCHING_RATES_BY_CODE_AND_DATE_RANGE, e);
             return Collections.emptyList();
         }
     }
@@ -101,9 +106,25 @@ public class CurrencyExchangeService {
             return fetchExchangeRatesFromDatabase(rs);
         } catch (SQLException e) {
             e.printStackTrace();
-            log.error("Error while fetching exchange rates by date from the database", e);
+            log.error(ERROR_FETCHING_RATES_BY_DATE, e);
             return Collections.emptyList();
         }
+    }
+
+    public double getLatestRate(String currencyCode) {
+        LocalDate effectiveDate = getEffectiveDate();
+        List<CurrencyExchangeDto> rates = getExchangeRatesByCodeAndDate(currencyCode, effectiveDate);
+        if (rates.isEmpty()) {
+            log.error(String.format(NO_RATES_FOUND, currencyCode, effectiveDate));
+        }
+        return getAverageRate(rates);
+    }
+
+    private double getAverageRate(List<CurrencyExchangeDto> rates) {
+        return rates.stream()
+                .mapToDouble(dto -> dto.getAverageRate().doubleValue())
+                .average()
+                .orElseThrow(NoSuchElementException::new);
     }
 
 }

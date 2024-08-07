@@ -1,6 +1,7 @@
 package com.kodilla.onlinecurrencyexchangebackend.config;
 
 import com.kodilla.onlinecurrencyexchangebackend.repository.UserRepository;
+import com.kodilla.onlinecurrencyexchangebackend.service.email.EmailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -48,4 +49,5 @@ public class ApplicationConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
+
 }

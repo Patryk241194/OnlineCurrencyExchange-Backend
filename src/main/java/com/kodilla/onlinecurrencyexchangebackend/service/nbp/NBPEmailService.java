@@ -5,6 +5,7 @@ import com.kodilla.onlinecurrencyexchangebackend.domain.Currency;
 import com.kodilla.onlinecurrencyexchangebackend.domain.User;
 import com.kodilla.onlinecurrencyexchangebackend.dto.CurrencyExchangeDto;
 import com.kodilla.onlinecurrencyexchangebackend.dto.user.UserDetailResponse;
+import com.kodilla.onlinecurrencyexchangebackend.observer.UserObserver;
 import com.kodilla.onlinecurrencyexchangebackend.service.domain.CurrencyExchangeService;
 import com.kodilla.onlinecurrencyexchangebackend.service.domain.CurrencyService;
 import com.kodilla.onlinecurrencyexchangebackend.service.domain.UserService;
@@ -50,6 +51,18 @@ public class NBPEmailService {
                 emailService.send(mail);
             }
         }
+    }
+
+    public void notifyObserver(UserObserver observer, double currentRate) {
+        String subject = "Currency Alert: " + observer.getCurrencyCode();
+        String message = "The rate for " + observer.getCurrencyCode() + " has reached " + currentRate + ".";
+        Mail mail = Mail.builder()
+                .mailTo(observer.getEmail())
+                .subject(subject)
+                .message(message)
+                .build();
+        emailService.send(mail);
+        log.info("Sent email to {}: {}", observer.getEmail(), message);
     }
 
     private List<CurrencyExchangeDto> filterRatesForUser(List<CurrencyExchangeDto> allRates, List<String> subscribedCurrencies) {

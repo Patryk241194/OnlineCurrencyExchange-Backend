@@ -30,6 +30,10 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     @Column(name = "ROLE")
     private RoleStatus role;
+    @Column(name = "EMAIL_VERIFIED")
+    private boolean emailVerified;
+    @Column(name = "VERIFICATION_TOKEN")
+    private String verificationToken;
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "subscribedUsers")
     @Builder.Default
     private Set<Currency> subscribedCurrencies = new HashSet<>();

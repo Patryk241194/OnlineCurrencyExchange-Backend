@@ -42,6 +42,8 @@ public class UserMapper implements Mapper<UserDto, User> {
                 userDto.getEmail(),
                 null,
                 roleStatus,
+                false,
+                null,
                 (userDto.getSubscribedCurrenciesIds() != null) ? currencyService.getCurrenciesBySubscribedUsersId(userDto.getId()) : null
         );
     }

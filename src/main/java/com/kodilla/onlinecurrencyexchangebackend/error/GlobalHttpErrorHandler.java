@@ -2,6 +2,7 @@ package com.kodilla.onlinecurrencyexchangebackend.error;
 
 import com.kodilla.onlinecurrencyexchangebackend.error.auth.InvalidCredentialsException;
 import com.kodilla.onlinecurrencyexchangebackend.error.auth.InvalidPasswordException;
+import com.kodilla.onlinecurrencyexchangebackend.error.auth.InvalidVerificationTokenException;
 import com.kodilla.onlinecurrencyexchangebackend.error.auth.UnauthorizedActionException;
 import com.kodilla.onlinecurrencyexchangebackend.error.currency.CurrencyNotFoundException;
 import com.kodilla.onlinecurrencyexchangebackend.error.exchangerate.ExchangeRateNotFoundException;
@@ -61,5 +62,10 @@ public class GlobalHttpErrorHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(UserNotLoggedInException.class)
     public ResponseEntity<Object> handleUserNotLoggedInException(UserNotLoggedInException ex) {
         return new ResponseEntity<>("User is not logged in", HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(InvalidVerificationTokenException.class)
+    public ResponseEntity<Object> handleInvalidVerificationToken(InvalidVerificationTokenException ex) {
+        return new ResponseEntity<>("Invalid verification token.", HttpStatus.BAD_REQUEST);
     }
 }
