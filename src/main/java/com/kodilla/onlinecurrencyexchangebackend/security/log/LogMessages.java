@@ -51,4 +51,13 @@ public class LogMessages {
     public static final String ERROR_FETCHING_RATES_BY_CODE_AND_DATE_RANGE = "Error while fetching exchange rates by code and date range from the database";
     public static final String ERROR_FETCHING_RATES_BY_DATE = "Error while fetching exchange rates by date from the database";
     public static final String NO_RATES_FOUND = "No rates found for currency code: %s on date: %s";
+
+    // Currency Service
+    public static final String USER_SUBSCRIBED_TO_CURRENCY = "User with username: {} subscribed to currency: {}";
+    public static final String USER_ALREADY_SUBSCRIBED_TO_CURRENCY = "User with username: {} is already subscribed to currency: {}";
+    public static final String USER_UNSUBSCRIBED_FROM_CURRENCY = "User with username: {} unsubscribed from currency: {}";
+    public static final String CURRENCY_OBSERVER_SUBSCRIBED = "Observer added for user with email: {} for currency: {}";
+    public static final String CURRENCY_OBSERVER_UNSUBSCRIBED = "Observer removed for user with email: {} for currency: {}";
+    public static final String CURRENCY_UPDATE_STARTED = "Starting scheduled currency update.";
+    public static final String CURRENCY_UPDATE_COMPLETED = "Currency update completed.";
 }

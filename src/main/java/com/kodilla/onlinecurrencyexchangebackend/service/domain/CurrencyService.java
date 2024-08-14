@@ -5,6 +5,7 @@ import com.kodilla.onlinecurrencyexchangebackend.dto.CurrencyDisplayDto;
 import com.kodilla.onlinecurrencyexchangebackend.dto.CurrencyExchangeDto;
 import com.kodilla.onlinecurrencyexchangebackend.dto.nbp.RateDto;
 import com.kodilla.onlinecurrencyexchangebackend.error.currency.CurrencyNotFoundException;
+import com.kodilla.onlinecurrencyexchangebackend.error.currency.CurrencyObservableNotFoundException;
 import com.kodilla.onlinecurrencyexchangebackend.error.user.UserNotLoggedInException;
 import com.kodilla.onlinecurrencyexchangebackend.mapper.CurrencyMapper;
 import com.kodilla.onlinecurrencyexchangebackend.observer.CurrencyObservable;
@@ -12,13 +13,15 @@ import com.kodilla.onlinecurrencyexchangebackend.observer.Observer;
 import com.kodilla.onlinecurrencyexchangebackend.observer.UserObserver;
 import com.kodilla.onlinecurrencyexchangebackend.repository.CurrencyRepository;
 import com.kodilla.onlinecurrencyexchangebackend.repository.UserRepository;
+import com.kodilla.onlinecurrencyexchangebackend.security.authorization.CurrencyCredentialValidator;
 import com.kodilla.onlinecurrencyexchangebackend.security.jwt.JwtService;
 import com.kodilla.onlinecurrencyexchangebackend.service.nbp.NBPEmailService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -26,9 +29,13 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.kodilla.onlinecurrencyexchangebackend.nbp.scheduler.NBPScheduler.getEffectiveDate;
+import static com.kodilla.onlinecurrencyexchangebackend.security.authorization.CurrencyCredentialValidator.isThresholdValid;
+import static com.kodilla.onlinecurrencyexchangebackend.security.log.LogMessages.*;
 
+@Slf4j
 @Service
 @AllArgsConstructor
+@EnableScheduling
 public class CurrencyService {
 
     private final UserRepository userRepository;
@@ -55,6 +62,9 @@ public class CurrencyService {
             currency.getSubscribedUsers().add(user);
             userRepository.save(user);
             currencyRepository.save(currency);
+            log.info(USER_SUBSCRIBED_TO_CURRENCY, username, currencyCode);
+        } else {
+            log.info(USER_ALREADY_SUBSCRIBED_TO_CURRENCY, username, currencyCode);
         }
     }
 
@@ -67,10 +77,14 @@ public class CurrencyService {
             currency.getSubscribedUsers().remove(user);
             userRepository.save(user);
             currencyRepository.save(currency);
+            log.info(USER_UNSUBSCRIBED_FROM_CURRENCY, username, currencyCode);
         }
     }
 
     public void subscribeObserverToCurrency(String currencyCode, double threshold, boolean aboveThreshold, String token) {
+        if (isThresholdValid(threshold)) {
+            throw new IllegalArgumentException("Threshold must be higher than 0 and cannot be null.");
+        }
         String username = jwtService.extractUsername(token);
         var user = userRepository.findByUsername(username).orElseThrow(UserNotLoggedInException::new);
         UserObserver observer = new UserObserver(user.getEmail(), currencyCode, threshold, aboveThreshold);
@@ -81,36 +95,35 @@ public class CurrencyService {
         if (observer.shouldNotify(currencyCode, currentRate)) {
             nbpEmailService.notifyObserver(observer, currentRate);
         }
+        log.info(CURRENCY_OBSERVER_SUBSCRIBED, user.getEmail(), currencyCode);
     }
 
-//    public void unsubscribeObserverFromCurrency(String currencyCode, String token) {
-//        String username = jwtService.extractUsername(token);
-//        var user = userRepository.findByUsername(username).orElseThrow(UserNotLoggedInException::new);
-//
-//        Optional<CurrencyObservable> currencyObservableOpt = currencyObservable.stream()
-//                .filter(observable -> observable.getCurrencyCoe().equals(currencyCode))
-//                .findFirst();
-//
-//        if (currencyObservableOpt.isPresent()) {
-//            CurrencyObservable currencyObservable = currencyObservableOpt.get();
-//            Optional<Observer> observerOptional = currencyObservable.getObservers().stream()
-//                    .filter(o -> o instanceof UserObserver && ((UserObserver) o).getEmail().equals(user.getEmail()))
-//                    .findFirst();
-//            observerOptional.ifPresent(currencyObservable::removeObserver);
-//        }
-//
-//        if (currencyObservable.getObservers().contains(currencyCode)) {
-//            Optional<Observer> observerOptional = currencyObservable.getObservers().stream()
-//                    .filter(o -> o instanceof UserObserver && ((UserObserver) o).getEmail().equals(user.getEmail()))
-//                    .findFirst();
-//            observerOptional.ifPresent(currencyObservable::removeObserver);
-//        }
-//    }
+    public void unsubscribeObserverFromCurrency(String currencyCode, String token) {
+        String username = jwtService.extractUsername(token);
+        var user = userRepository.findByUsername(username).orElseThrow(UserNotLoggedInException::new);
+
+        CurrencyObservable currencyObservable = currencyObservables.get(currencyCode);
+        if (currencyObservable == null) {
+            throw new CurrencyObservableNotFoundException(currencyCode);
+        }
+        Observer observerToRemove = currencyObservable.getObservers().stream()
+                .filter(observer -> observer instanceof UserObserver)
+                .map(observer -> (UserObserver) observer)
+                .filter(observer -> observer.getEmail().equals(user.getEmail()))
+                .filter(observer -> observer.getCurrencyCode().equals(currencyCode))
+                .findFirst()
+                .orElse(null);
+
+        if (observerToRemove != null) {
+            currencyObservable.removeObserver(observerToRemove);
+            log.info(CURRENCY_OBSERVER_UNSUBSCRIBED, user.getEmail(), currencyCode);
+        }
+    }
 
     @Scheduled(cron = "0 10 13 ? * MON-FRI")
     public void sendCurrencyUpdateToObservers() {
-        LocalDate effectiveDate = getEffectiveDate();
-        List<CurrencyExchangeDto> rates = currencyExchangeService.getExchangeRatesByDate(effectiveDate);
+        log.info(CURRENCY_UPDATE_STARTED);
+        List<CurrencyExchangeDto> rates = currencyExchangeService.getExchangeRatesByDate(getEffectiveDate());
 
         for (CurrencyObservable observable : currencyObservables.values()) {
             String currencyCode = observable.getCurrencyCode();
@@ -120,6 +133,7 @@ public class CurrencyService {
                 observable.setRate(currentRate);
             }
         }
+        log.info(CURRENCY_UPDATE_COMPLETED);
     }
 
     private double getCurrentRate(List<CurrencyExchangeDto> rates, String currencyCode) {

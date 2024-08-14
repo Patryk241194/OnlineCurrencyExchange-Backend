@@ -145,20 +145,6 @@ public class UserService {
         }
     }
 
-    // TODO: 22.07.2024 methods that may need to be removed
-
-    public void subscribeUserToCurrency(String currencyCode, HttpSession session) {
-        Long userId = (Long) session.getAttribute("userId");
-        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-        Currency currency = currencyRepository.findByCode(currencyCode).orElseThrow(CurrencyNotFoundException::new);
-        if (!user.getSubscribedCurrencies().contains(currency)) {
-            user.getSubscribedCurrencies().add(currency);
-            currency.getSubscribedUsers().add(user);
-            userRepository.save(user);
-            currencyRepository.save(currency);
-        }
-    }
-
     public Set<User> getUsersBySubscribedCurrenciesId(Long id) {
         return userRepository.findUsersBySubscribedCurrenciesId(id);
     }

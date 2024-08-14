@@ -4,6 +4,7 @@ import com.kodilla.onlinecurrencyexchangebackend.dto.user.EditUserPasswordReques
 import com.kodilla.onlinecurrencyexchangebackend.dto.user.EditUserRequest;
 import com.kodilla.onlinecurrencyexchangebackend.dto.user.EditUserResponse;
 import com.kodilla.onlinecurrencyexchangebackend.dto.user.UserDetailResponse;
+import com.kodilla.onlinecurrencyexchangebackend.error.auth.InvalidAuthorizationHeaderException;
 import com.kodilla.onlinecurrencyexchangebackend.service.domain.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -68,6 +69,9 @@ public class UserController {
     }
 
     private String extractToken(String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new InvalidAuthorizationHeaderException();
+        }
         return authHeader.substring(7);
     }
 
