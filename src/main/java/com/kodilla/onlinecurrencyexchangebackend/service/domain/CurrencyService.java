@@ -13,7 +13,6 @@ import com.kodilla.onlinecurrencyexchangebackend.observer.Observer;
 import com.kodilla.onlinecurrencyexchangebackend.observer.UserObserver;
 import com.kodilla.onlinecurrencyexchangebackend.repository.CurrencyRepository;
 import com.kodilla.onlinecurrencyexchangebackend.repository.UserRepository;
-import com.kodilla.onlinecurrencyexchangebackend.security.authorization.CurrencyCredentialValidator;
 import com.kodilla.onlinecurrencyexchangebackend.security.jwt.JwtService;
 import com.kodilla.onlinecurrencyexchangebackend.service.nbp.NBPEmailService;
 import lombok.AllArgsConstructor;
@@ -82,7 +81,7 @@ public class CurrencyService {
     }
 
     public void subscribeObserverToCurrency(String currencyCode, double threshold, boolean aboveThreshold, String token) {
-        if (isThresholdValid(threshold)) {
+        if (!isThresholdValid(threshold)) {
             throw new IllegalArgumentException("Threshold must be higher than 0 and cannot be null.");
         }
         String username = jwtService.extractUsername(token);

@@ -51,6 +51,8 @@ public class LogMessages {
     public static final String ERROR_FETCHING_RATES_BY_CODE_AND_DATE_RANGE = "Error while fetching exchange rates by code and date range from the database";
     public static final String ERROR_FETCHING_RATES_BY_DATE = "Error while fetching exchange rates by date from the database";
     public static final String NO_RATES_FOUND = "No rates found for currency code: %s on date: %s";
+    public static final String ERROR_FETCHING_RATES_BY_CODE = "Error while fetching exchange rates by code from the database";
+    public static final String ERROR_FETCHING_RATES_BY_DATE_RANGE = "Error while fetching exchange rates by date range from the database";
 
     // Currency Service
     public static final String USER_SUBSCRIBED_TO_CURRENCY = "User with username: {} subscribed to currency: {}";

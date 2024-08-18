@@ -62,6 +62,21 @@ public class CurrencyExchangeService {
         }
     }
 
+    public List<CurrencyExchangeDto> getExchangeRatesByCode(String currencyCode) {
+        try (Connection conn = DriverManager.getConnection(dbConfig.getJdbcUrl(), dbConfig.getUsername(), dbConfig.getPassword());
+             CallableStatement stmt = conn.prepareCall("{CALL listRatesByCode(?)}")) {
+            stmt.setString(1, currencyCode);
+
+            ResultSet rs = stmt.executeQuery();
+
+            return fetchExchangeRatesFromDatabase(rs);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            log.error(ERROR_FETCHING_RATES_BY_CODE, e);
+            return Collections.emptyList();
+        }
+    }
+
     public List<CurrencyExchangeDto> getExchangeRatesByCodeAndDate(String currencyCode, LocalDate effectiveDate) {
         try (Connection conn = DriverManager.getConnection(dbConfig.getJdbcUrl(), dbConfig.getUsername(), dbConfig.getPassword());
              CallableStatement stmt = conn.prepareCall("{CALL listRatesByCodeAndDate(?, ?)}")) {
@@ -107,6 +122,22 @@ public class CurrencyExchangeService {
         } catch (SQLException e) {
             e.printStackTrace();
             log.error(ERROR_FETCHING_RATES_BY_DATE, e);
+            return Collections.emptyList();
+        }
+    }
+
+    public List<CurrencyExchangeDto> getExchangeRatesFromDateToDate(LocalDate startingDate, LocalDate endingDate) {
+        try (Connection conn = DriverManager.getConnection(dbConfig.getJdbcUrl(), dbConfig.getUsername(), dbConfig.getPassword());
+             CallableStatement stmt = conn.prepareCall("{CALL listRatesFromDateToDate(?, ?)}")) {
+            stmt.setDate(1, Date.valueOf(startingDate));
+            stmt.setDate(2, Date.valueOf(endingDate));
+
+            ResultSet rs = stmt.executeQuery();
+
+            return fetchExchangeRatesFromDatabase(rs);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            log.error(ERROR_FETCHING_RATES_BY_DATE_RANGE, e);
             return Collections.emptyList();
         }
     }

@@ -46,7 +46,7 @@ public class CurrencyController {
     @PostMapping("/observe/{currencyCode}")
     public ResponseEntity<Void> subscribeObserverToCurrency(
             @PathVariable String currencyCode,
-            @RequestParam Double threshold,
+            @RequestParam double threshold,
             @RequestParam boolean aboveThreshold,
             @RequestHeader("Authorization") String authHeader) {
         String token = extractToken(authHeader);
