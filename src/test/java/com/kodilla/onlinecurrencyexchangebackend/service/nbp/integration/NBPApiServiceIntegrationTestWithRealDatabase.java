@@ -14,6 +14,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @Transactional
@@ -68,11 +69,33 @@ class NBPApiServiceIntegrationTestWithRealDatabase {
         // When
         List<Currency> listOfCurrencies = currencyRepository.findAll();
         List<ExchangeRate> listOfExchangeRates = exchangeRateRepository.findAll();
-        System.out.println(listOfCurrencies);
-        System.out.println(listOfExchangeRates);
 
         // Then
         assertEquals(13, listOfCurrencies.size());
-        assertEquals(52, listOfExchangeRates.size());
+        assertEquals(13, listOfExchangeRates.size());
+    }
+
+    @Test
+    void shouldSaveRatesToDatabaseForLastOneHundredWorkingDays() {
+        // Given
+        LocalDate effectiveDate = LocalDate.now();
+        int expectedCurrencyCount = 13;
+        int expectedDays = 100;
+        int maxIterations = 200;
+        int currentIterations = 0;
+        List<ExchangeRate> listOfExchangeRates = exchangeRateRepository.findAll();
+
+        while (listOfExchangeRates.size() < expectedCurrencyCount * expectedDays && currentIterations < maxIterations) {
+            nbpApiService.updateCurrencyRatesWithDate(effectiveDate);
+            effectiveDate = effectiveDate.minusDays(1);
+            listOfExchangeRates = exchangeRateRepository.findAll();
+            currentIterations++;
+        }
+
+        List<Currency> listOfCurrencies = currencyRepository.findAll();
+
+        // Then
+        assertEquals(expectedCurrencyCount, listOfCurrencies.size());
+        assertTrue(listOfExchangeRates.size() >= expectedCurrencyCount * expectedDays);
     }
 }

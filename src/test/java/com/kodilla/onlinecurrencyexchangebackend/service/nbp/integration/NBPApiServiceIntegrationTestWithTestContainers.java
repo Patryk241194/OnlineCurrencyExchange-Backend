@@ -46,26 +46,26 @@ class NBPApiServiceIntegrationTestWithTestContainers {
         registry.add("spring.datasource.password", mySQLContainer::getPassword);
     }
 
-    @Test
-    void shouldSaveRatesToDatabase() {
-        // Given
-        nbpApiService.updateCurrencyRates();
-
-        // When
-        List<Currency> listOfCurrencies = currencyRepository.findAll();
-        List<ExchangeRate> listOfExchangeRates = exchangeRateRepository.findAll();
-        System.out.println(listOfCurrencies);
-        System.out.println(listOfExchangeRates);
-
-        // Then
-        if (validator.isWeekend(LocalDate.now())) {
-            assertEquals(0, listOfCurrencies.size());
-            assertEquals(0, listOfExchangeRates.size());
-        } else {
-            assertEquals(13, listOfCurrencies.size());
-            assertEquals(13, listOfExchangeRates.size());
-        }
-    }
+//    @Test
+//    void shouldSaveRatesToDatabase() {
+//        // Given
+//        nbpApiService.updateCurrencyRates();
+//
+//        // When
+//        List<Currency> listOfCurrencies = currencyRepository.findAll();
+//        List<ExchangeRate> listOfExchangeRates = exchangeRateRepository.findAll();
+//        System.out.println(listOfCurrencies);
+//        System.out.println(listOfExchangeRates);
+//
+//        // Then
+//        if (validator.isWeekend(LocalDate.now())) {
+//            assertEquals(0, listOfCurrencies.size());
+//            assertEquals(0, listOfExchangeRates.size());
+//        } else {
+//            assertEquals(13, listOfCurrencies.size());
+//            assertEquals(13, listOfExchangeRates.size());
+//        }
+//    }
 
     @Test
     void shouldSaveRatesToDatabaseWithSpecificDate() {

@@ -2,7 +2,6 @@ package com.kodilla.onlinecurrencyexchangebackend.controller;
 
 import com.kodilla.onlinecurrencyexchangebackend.dto.CurrencyExchangeDto;
 import com.kodilla.onlinecurrencyexchangebackend.facade.CurrencyExchangeFacade;
-import com.kodilla.onlinecurrencyexchangebackend.service.domain.CurrencyExchangeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;

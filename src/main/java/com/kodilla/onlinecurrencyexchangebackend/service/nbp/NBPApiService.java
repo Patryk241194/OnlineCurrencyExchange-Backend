@@ -1,12 +1,9 @@
 package com.kodilla.onlinecurrencyexchangebackend.service.nbp;
 
 import com.kodilla.onlinecurrencyexchangebackend.domain.Currency;
-import com.kodilla.onlinecurrencyexchangebackend.domain.ExchangeRate;
 import com.kodilla.onlinecurrencyexchangebackend.dto.nbp.RateDto;
 import com.kodilla.onlinecurrencyexchangebackend.nbp.client.NBPApiClient;
 import com.kodilla.onlinecurrencyexchangebackend.nbp.tables.NBPTableType;
-import com.kodilla.onlinecurrencyexchangebackend.repository.CurrencyRepository;
-import com.kodilla.onlinecurrencyexchangebackend.repository.ExchangeRateRepository;
 import com.kodilla.onlinecurrencyexchangebackend.service.domain.CurrencyService;
 import com.kodilla.onlinecurrencyexchangebackend.service.domain.ExchangeRateService;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor

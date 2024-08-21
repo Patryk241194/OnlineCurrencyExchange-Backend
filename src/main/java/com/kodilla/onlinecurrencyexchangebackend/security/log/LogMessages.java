@@ -62,4 +62,19 @@ public class LogMessages {
     public static final String CURRENCY_OBSERVER_UNSUBSCRIBED = "Observer removed for user with email: {} for currency: {}";
     public static final String CURRENCY_UPDATE_STARTED = "Starting scheduled currency update.";
     public static final String CURRENCY_UPDATE_COMPLETED = "Currency update completed.";
+
+    // NBP API Client
+    public static final String RECEIVED_DATA_FROM_API = "Received data from API: {}";
+    public static final String ERROR_FETCHING_DATA = "Error fetching data from NBP API: {}";
+    public static final String FETCHING_DATA_FROM_API = "Fetching data from API: {}";
+    public static final String FETCHED_RATES_FROM_API = "Fetched {} rates from API. First rate: {}";
+    public static final String CURRENCY_DETAILS = "Currency: {}, Code: {}, Average Rate: {}, Buying Rate: {}, Selling Rate: {}";
+    public static final String INVALID_DATE_PROVIDED = "Invalid date provided for tableType {}: {}";
+
+    // NBP API Date Validator
+    public static final String HTTP_CLIENT_ERROR = "HTTP Client Error occurred: {} - {}";
+    public static final String HTTP_SERVER_ERROR = "HTTP Server Error occurred: {} - {}";
+    public static final String UNEXPECTED_ERROR_VALIDATING_DATE = "Unexpected error occurred while validating date {}: {}";
+    public static final String DATE_IS_HOLIDAY_OR_WEEKEND = "Date {} is a holiday or weekend (no data available).";
+    public static final String UNEXPECTED_RESPONSE_STATUS = "Unexpected response status {} for date {}";
 }

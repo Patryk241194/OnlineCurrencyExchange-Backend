@@ -17,6 +17,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.kodilla.onlinecurrencyexchangebackend.security.log.LogMessages.*;
+
 @Component
 @RequiredArgsConstructor
 public class NBPApiClient {
@@ -29,7 +31,7 @@ public class NBPApiClient {
     private List<RateDto> fetchData(URI apiUrl) {
         try {
             RateListDto[] rateLists = restTemplate.getForObject(apiUrl, RateListDto[].class);
-            LOGGER.info("Received data from API: {}", Arrays.toString(rateLists));
+            LOGGER.info(RECEIVED_DATA_FROM_API, Arrays.toString(rateLists));
 
             List<RateDto> rates = Optional.ofNullable(rateLists)
                     .map(Arrays::stream)
@@ -42,25 +44,25 @@ public class NBPApiClient {
                     .collect(Collectors.toList());
 
             rates.forEach(rate -> {
-                LOGGER.info("Currency: {}, Code: {}, Average Rate: {}, Buying Rate: {}, Selling Rate: {}",
-                        rate.getCurrency(), rate.getCode(), rate.getAverageRate(), rate.getBuyingRate(), rate.getSellingRate());
+                LOGGER.info(CURRENCY_DETAILS, rate.getCurrency(), rate.getCode(), rate.getAverageRate(), rate.getBuyingRate(), rate.getSellingRate());
             });
 
-            LOGGER.info("Fetched {} rates from API. First rate: {}", rates.size(), rates.isEmpty() ? "N/A" : rates.get(0));
+            LOGGER.info(FETCHED_RATES_FROM_API, rates.size(), rates.isEmpty() ? "N/A" : rates.get(0));
             return rates;
         } catch (RestClientException e) {
-            LOGGER.error("Error fetching data from NBP API: {}", e.getMessage(), e);
+            LOGGER.error(ERROR_FETCHING_DATA, e.getMessage(), e);
             return Collections.emptyList();
         }
     }
 
     public List<RateDto> fetchRatesFromTable(String tableType, LocalDate effectiveDate) {
         if (!nbpApiDateValidator.isValidDate(effectiveDate, tableType)) {
+            LOGGER.warn(INVALID_DATE_PROVIDED, tableType, effectiveDate);
             return Collections.emptyList();
         }
 
         URI apiUrl = URI.create(nbpConfig.getNbpApiEndpoint() + nbpConfig.getExchangeRates() + nbpConfig.getTables() + tableType + "/" + effectiveDate + nbpConfig.getFormatJson());
-        LOGGER.info("Fetching data from API: {}", apiUrl);
+        LOGGER.info(FETCHING_DATA_FROM_API, apiUrl);
         List<RateDto> rates = fetchData(apiUrl);
         return rates;
     }
