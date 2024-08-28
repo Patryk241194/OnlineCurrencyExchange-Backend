@@ -80,7 +80,7 @@ class NBPApiServiceIntegrationTestWithRealDatabase {
         // Given
         LocalDate effectiveDate = LocalDate.now();
         int expectedCurrencyCount = 13;
-        int expectedDays = 100;
+        int expectedDays = 101;
         int maxIterations = 200;
         int currentIterations = 0;
         List<ExchangeRate> listOfExchangeRates = exchangeRateRepository.findAll();
