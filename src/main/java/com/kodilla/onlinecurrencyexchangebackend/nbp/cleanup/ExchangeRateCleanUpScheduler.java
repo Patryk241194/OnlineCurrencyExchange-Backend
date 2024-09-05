@@ -1,10 +1,9 @@
 package com.kodilla.onlinecurrencyexchangebackend.nbp.cleanup;
 
-import com.kodilla.onlinecurrencyexchangebackend.domain.Currency;
 import com.kodilla.onlinecurrencyexchangebackend.domain.ExchangeRate;
-import com.kodilla.onlinecurrencyexchangebackend.repository.CurrencyRepository;
 import com.kodilla.onlinecurrencyexchangebackend.repository.ExchangeRateRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -15,6 +14,7 @@ public class ExchangeRateCleanUpScheduler {
 
     private final ExchangeRateRepository exchangeRateRepository;
 
+    @Scheduled(cron = "0 15 13 ? * MON-FRI")
     public void cleanUpOldExchangeRates() {
         List<String> currencyCodes = exchangeRateRepository.findAllCurrencyCodes();
 

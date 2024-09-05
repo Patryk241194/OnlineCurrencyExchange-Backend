@@ -1,13 +1,9 @@
 package com.kodilla.onlinecurrencyexchangebackend.service.nbp;
 
-import com.kodilla.onlinecurrencyexchangebackend.config.AdminConfig;
-import com.kodilla.onlinecurrencyexchangebackend.domain.Currency;
-import com.kodilla.onlinecurrencyexchangebackend.domain.User;
 import com.kodilla.onlinecurrencyexchangebackend.dto.CurrencyExchangeDto;
 import com.kodilla.onlinecurrencyexchangebackend.dto.user.UserDetailResponse;
 import com.kodilla.onlinecurrencyexchangebackend.observer.UserObserver;
 import com.kodilla.onlinecurrencyexchangebackend.service.domain.CurrencyExchangeService;
-import com.kodilla.onlinecurrencyexchangebackend.service.domain.CurrencyService;
 import com.kodilla.onlinecurrencyexchangebackend.service.domain.UserService;
 import com.kodilla.onlinecurrencyexchangebackend.service.email.EmailService;
 import com.kodilla.onlinecurrencyexchangebackend.service.email.Mail;
