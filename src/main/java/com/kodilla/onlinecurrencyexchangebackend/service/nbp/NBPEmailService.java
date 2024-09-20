@@ -7,6 +7,7 @@ import com.kodilla.onlinecurrencyexchangebackend.service.domain.CurrencyExchange
 import com.kodilla.onlinecurrencyexchangebackend.service.domain.UserService;
 import com.kodilla.onlinecurrencyexchangebackend.service.email.EmailService;
 import com.kodilla.onlinecurrencyexchangebackend.service.email.Mail;
+import com.kodilla.onlinecurrencyexchangebackend.service.email.MailCreatorService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -28,6 +29,7 @@ public class NBPEmailService {
     private final EmailService emailService;
     private final UserService userService;
     private final CurrencyExchangeService currencyExchangeService;
+    private final MailCreatorService mailCreatorService;
 
     @Scheduled(cron = "0 5 13 ? * MON-FRI")
     public void sendDailyCurrencyRates() {
@@ -38,10 +40,11 @@ public class NBPEmailService {
             List<CurrencyExchangeDto> userRates = filterRatesForUser(allRates, user.getSubscribedCurrencies());
             if (!userRates.isEmpty()) {
                 String subject = createEmailSubject(user.getSubscribedCurrencies());
+                String emailContent = mailCreatorService.buildDailyCurrencyEmail(user.getUsername(), userRates);
                 Mail mail = Mail.builder()
                         .mailTo(user.getEmail())
                         .subject(subject)
-                        .message(generateEmailTemplate(userRates))
+                        .message(emailContent)
                         .build();
                 log.info(PREPARING_EMAIL_LOG, user.getUsername());
                 emailService.send(mail);

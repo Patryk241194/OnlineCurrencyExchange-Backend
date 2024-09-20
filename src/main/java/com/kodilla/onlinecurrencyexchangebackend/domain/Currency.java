@@ -29,7 +29,9 @@ public class Currency {
     @OneToMany(
             targetEntity = ExchangeRate.class,
             mappedBy = "currency",
-            fetch = FetchType.LAZY
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
     )
     @Builder.Default
     private List<ExchangeRate> exchangeRates = new ArrayList<>();

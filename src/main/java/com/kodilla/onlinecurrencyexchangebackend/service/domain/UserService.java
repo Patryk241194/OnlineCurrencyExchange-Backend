@@ -25,7 +25,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
+import javax.transaction.Transactional;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static com.kodilla.onlinecurrencyexchangebackend.security.log.LogMessages.*;
@@ -74,11 +77,20 @@ public class UserService {
 
     public void deleteUser(String token) {
         String username = jwtService.extractUsername(token);
-        if (userRepository.findByUsername(username).isEmpty()) {
+        Optional<User> userOptional = userRepository.findByUsername(username);
+        if (userOptional.isEmpty()) {
             log.error(USER_NOT_FOUND, username);
             throw new UserNotFoundException();
         }
-        userRepository.deleteByUsername(username);
+        User user = userOptional.get();
+        Set<Currency> subscribedCurrencies = new HashSet<>(user.getSubscribedCurrencies());
+        for (Currency currency : subscribedCurrencies) {
+            currency.getSubscribedUsers().remove(user);
+            user.getSubscribedCurrencies().remove(currency);
+            currencyRepository.save(currency);
+            log.info(USER_UNSUBSCRIBED_FROM_CURRENCY, username, currency.getCode());
+        }
+        userRepository.delete(user);
         log.info(USER_DELETED_SUCCESS, username);
     }
 

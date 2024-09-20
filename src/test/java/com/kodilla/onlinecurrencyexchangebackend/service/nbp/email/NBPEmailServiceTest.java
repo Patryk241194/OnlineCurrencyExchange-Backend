@@ -33,8 +33,6 @@ class NBPEmailServiceTest {
     @Autowired
     private AdminConfig adminConfig;
     private User user;
-    private Currency currency;
-    private ExchangeRate exchangeRate;
 
     @BeforeEach
     void setUp() {
@@ -46,25 +44,52 @@ class NBPEmailServiceTest {
                 .build();
         userRepository.save(user);
 
-        currency = Currency.builder()
+        Currency currency1 = Currency.builder()
                 .code("USD")
                 .name("US Dollar")
                 .build();
-        currencyRepository.save(currency);
+        currencyRepository.save(currency1);
 
-        exchangeRate = ExchangeRate.builder()
+        Currency currency2 = Currency.builder()
+                .code("EUR")
+                .name("EURO")
+                .build();
+        currencyRepository.save(currency2);
+
+        ExchangeRate exchangeRate1 = ExchangeRate.builder()
                 .sellingRate(BigDecimal.valueOf(4.0149))
                 .buyingRate(BigDecimal.valueOf(3.9353))
                 .averageRate(BigDecimal.valueOf(3.9850))
                 .effectiveDate(LocalDate.now())
-                .currency(currency)
+                .currency(currency1)
                 .build();
-        exchangeRateRepository.save(exchangeRate);
+        exchangeRateRepository.save(exchangeRate1);
 
-        currency.getExchangeRates().add(exchangeRate);
-        currency.getSubscribedUsers().add(user);
+        ExchangeRate exchangeRate2 = ExchangeRate.builder()
+                .sellingRate(BigDecimal.valueOf(2.0123))
+                .buyingRate(BigDecimal.valueOf(3.2321))
+                .averageRate(BigDecimal.valueOf(2.9850))
+                .effectiveDate(LocalDate.now())
+                .currency(currency2)
+                .build();
+        exchangeRateRepository.save(exchangeRate2);
+
+        currency1.getExchangeRates().add(exchangeRate1);
+        currency2.getExchangeRates().add(exchangeRate2);
+        currency1.getSubscribedUsers().add(user);
+        currency2.getSubscribedUsers().add(user);
         userRepository.save(user);
-        currencyRepository.save(currency);
+        currencyRepository.save(currency1);
+        currencyRepository.save(currency2);
+    }
+
+    @Test
+    void shouldDeleteUser() {
+        // Given
+        userRepository.deleteById(10L);
+        // When
+        // Then
+
     }
 
     @Test

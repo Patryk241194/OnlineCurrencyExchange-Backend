@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -21,7 +23,7 @@ public class EmailService {
 
     public void send(final Mail mail) {
         try {
-            SimpleMailMessage mailMessage = createMailMessage(mail);
+            MimeMessagePreparator mailMessage = createMimeMessage(mail);
             javaMailSender.send(mailMessage);
             log.info(EMAIL_SENT_SUCCESS_LOG);
         } catch (MailException e) {
@@ -29,13 +31,16 @@ public class EmailService {
         }
     }
 
-    private SimpleMailMessage createMailMessage(final Mail mail) {
-        SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setTo(mail.getMailTo());
-        Optional.ofNullable(mail.getToCc()).ifPresent(mailMessage::setCc);
-        mailMessage.setSubject(mail.getSubject());
-        mailMessage.setText(mail.getMessage());
-        return mailMessage;
+    private MimeMessagePreparator createMimeMessage(final Mail mail) {
+        return mimeMessage -> {
+            MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, true);
+            messageHelper.setTo(mail.getMailTo());
+            if (mail.getToCc() != null) {
+                messageHelper.addCc(mail.getToCc());
+            }
+            messageHelper.setSubject(mail.getSubject());
+            messageHelper.setText(mail.getMessage(), true);
+        };
     }
 
 }

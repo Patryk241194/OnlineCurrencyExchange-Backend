@@ -34,7 +34,7 @@ public class User implements UserDetails {
     private boolean emailVerified;
     @Column(name = "VERIFICATION_TOKEN")
     private String verificationToken;
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "subscribedUsers")
+    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "subscribedUsers")
     @Builder.Default
     private Set<Currency> subscribedCurrencies = new HashSet<>();
 
