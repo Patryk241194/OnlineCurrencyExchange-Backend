@@ -8,9 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @RestController
@@ -25,7 +22,7 @@ public class CurrencyController {
         return ResponseEntity.ok(currencyService.getAllCurrencyDisplayDtos());
     }
 
-    @PutMapping("/subscribe/{currencyCode}")
+    @PostMapping("/subscribe/{currencyCode}")
     public ResponseEntity<Void> subscribeUserToCurrency(
             @PathVariable String currencyCode,
             @RequestHeader("Authorization") String authHeader) {
@@ -34,12 +31,20 @@ public class CurrencyController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PutMapping("/unsubscribe/{currencyCode}")
-    public ResponseEntity<Void> unsubscribeUserFromCurrency(
+    @PostMapping("/unsubscribe/{currencyCode}")
+    public ResponseEntity<Void> unsubscribeUserFromCurrencyViaWebsite(
             @PathVariable String currencyCode,
             @RequestHeader("Authorization") String authHeader) {
         String token = extractToken(authHeader);
-        currencyService.unsubscribeUserFromCurrency(currencyCode, token);
+        currencyService.unsubscribeUserFromCurrencyViaWebsite(currencyCode, token);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/unsubscribeViaEmail/{currencyCode}")
+    public ResponseEntity<Void> unsubscribeUserFromCurrencyViaEmail(
+            @PathVariable String currencyCode,
+            @RequestParam("token") String token) {
+        currencyService.unsubscribeUserFromCurrencyViaEmail(currencyCode, token);
         return ResponseEntity.ok().build();
     }
 
@@ -55,11 +60,19 @@ public class CurrencyController {
     }
 
     @PostMapping("/unobserve/{currencyCode}")
-    public ResponseEntity<Void> unsubscribeObserverFromCurrency(
+    public ResponseEntity<Void> unsubscribeObserverFromCurrencyViaWebsite(
             @PathVariable String currencyCode,
             @RequestHeader("Authorization") String authHeader) {
         String token = extractToken(authHeader);
-        currencyService.unsubscribeObserverFromCurrency(currencyCode, token);
+        currencyService.unsubscribeObserverFromCurrencyViaWebsite(currencyCode, token);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/unobserveViaEmail/{currencyCode}")
+    public ResponseEntity<Void> unsubscribeObserverFromCurrencyViaEmail(
+            @PathVariable String currencyCode,
+            @RequestParam("token") String token) {
+        currencyService.unsubscribeObserverFromCurrencyViaEmail(currencyCode, token);
         return ResponseEntity.ok().build();
     }
 

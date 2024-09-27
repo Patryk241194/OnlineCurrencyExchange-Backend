@@ -3,7 +3,7 @@
 <head>
     <meta name="viewport" content="width=device-width">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Daily Currency Exchange Rates</title>
+    <title th:text="${subject}">Currency Alert</title>
     <style>
         @media only screen and (max-width: 620px) {
             table[class=body] h1 {
@@ -77,15 +77,6 @@
                 line-height: inherit !important;
                 text-decoration: none !important;
             }
-
-            .btn-primary table td:hover {
-                background-color: #34495e !important;
-            }
-
-            .btn-primary a:hover {
-                background-color: #34495e !important;
-                border-color: #34495e !important;
-            }
         }
     </style>
 </head>
@@ -109,44 +100,41 @@
                                 <tr>
                                     <td>
                                         <h2 style="font-family: sans-serif; font-size: 24px; font-weight: bold; margin: 0; Margin-bottom: 15px;">
-                                            Daily Currency Exchange Rates</h2>
+                                            Currency Alert</h2>
                                         <p style="font-family: sans-serif; font-size: 14px; margin: 0; Margin-bottom: 15px;">
                                             Dear <span th:text="${username}">User</span>,
                                         </p>
                                         <p style="font-family: sans-serif; font-size: 14px; margin: 0; Margin-bottom: 15px;">
-                                            Here are your daily currency exchange rates:
+                                            The rate for <span th:text="${currencyCode}">Currency Code</span> has
+                                            reached
+                                            <span th:text="${currentRate}">Current Rate</span>.
                                         </p>
 
-                                        <!-- Loop for displaying rates with cancel subscription button -->
-                                        <div th:each="rate : ${userRates}">
-                                            <!-- Extra space before Currency Code -->
-                                            <br/>
-                                            <!-- Currency Code and Cancel Subscription in the same line with a small space -->
-                                            <span style="margin-right: 10px;">Currency Code: <strong
-                                                    th:text="${rate.currencyCode}"></strong></span>
-                                            <!-- Dynamic cancel subscription form inline with small space -->
-                                            <form th:action="${domainUrl} + '/api/v1/currencies/unsubscribeViaEmail/' + ${rate.currencyCode}"
-                                                  method="post"
-                                                  style="display: inline; margin: 0;">
-                                                <input type="hidden" name="token" th:value="${unsubscribeToken}"/>
-                                                <button type="submit"
-                                                        style="font-size: 14px; color: #ff0000; text-decoration: none; background-color: transparent; border: none; cursor: pointer;">
-                                                    Cancel Subscription
-                                                </button>
-                                            </form>
+                                        <!-- Currency Code and Unobserve Currency in the same line -->
+                                        <span style="margin-right: 10px;">Currency Code: <strong
+                                                th:text="${currencyCode}"></strong></span>
+                                        <!-- Dynamic unobserve form inline with small space -->
+                                        <form th:action="${domainUrl} + '/api/v1/currencies/unobserve/' + ${currencyCode}"
+                                              method="post"
+                                              style="display: inline; margin: 0;">
+                                            <input type="hidden" name="token" th:value="${unsubscribeToken}"/>
+                                            <button type="submit"
+                                                    style="font-size: 14px; color: #ff0000; text-decoration: none; background-color: transparent; border: none; cursor: pointer;">
+                                                Unobserve Currency
+                                            </button>
+                                        </form>
 
-                                            <!-- Currency details with smaller margin between lines -->
-                                            <p style="margin: 5px 0;">
-                                                Currency Name: <span th:text="${rate.currencyName}"></span><br/>
-                                                Selling Rate: <span
-                                                    th:text="${#numbers.formatDecimal(rate.sellingRate, 1, 4)}"></span><br/>
-                                                Buying Rate: <span
-                                                    th:text="${#numbers.formatDecimal(rate.buyingRate, 1, 4)}"></span><br/>
-                                                Average Rate: <span
-                                                    th:text="${#numbers.formatDecimal(rate.averageRate, 1, 4)}"></span><br/>
-                                                Effective Date: <span th:text="${rate.effectiveDate}"></span>
-                                            </p>
-                                        </div>
+                                        <!-- Currency details -->
+                                        <p style="margin: 5px 0;">
+                                            Currency Name: <span th:text="${rate.currencyName}"></span><br/>
+                                            Selling Rate: <span
+                                                th:text="${#numbers.formatDecimal(rate.sellingRate, 1, 4)}"></span><br/>
+                                            Buying Rate: <span
+                                                th:text="${#numbers.formatDecimal(rate.buyingRate, 1, 4)}"></span><br/>
+                                            Average Rate: <span
+                                                th:text="${#numbers.formatDecimal(rate.averageRate, 1, 4)}"></span><br/>
+                                            Effective Date: <span th:text="${rate.effectiveDate}"></span>
+                                        </p>
 
                                         <p style="font-family: sans-serif; font-size: 14px; margin: 0; Margin-top: 30px;">
                                             Best regards,<br>Your Currency Exchange Team

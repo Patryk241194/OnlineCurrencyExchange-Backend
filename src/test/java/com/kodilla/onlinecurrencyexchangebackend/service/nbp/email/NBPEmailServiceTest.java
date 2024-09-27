@@ -17,9 +17,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.UUID;
 
 @SpringBootTest
-@Transactional
+//@Transactional
 class NBPEmailServiceTest {
 
     @Autowired
@@ -37,10 +38,12 @@ class NBPEmailServiceTest {
     @BeforeEach
     void setUp() {
         user = User.builder()
-                .username("test_username2")
+                .username("Patryk Potrykus")
                 .email(adminConfig.getAdminMail())
                 .password("test_password")
                 .role(RoleStatus.USER)
+                .emailVerified(true)
+                .verificationToken(UUID.randomUUID().toString())
                 .build();
         userRepository.save(user);
 

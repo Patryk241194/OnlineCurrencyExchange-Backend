@@ -1,11 +1,14 @@
 package com.kodilla.onlinecurrencyexchangebackend.service.domain;
 
 import com.kodilla.onlinecurrencyexchangebackend.domain.Currency;
+import com.kodilla.onlinecurrencyexchangebackend.domain.User;
 import com.kodilla.onlinecurrencyexchangebackend.dto.CurrencyDisplayDto;
 import com.kodilla.onlinecurrencyexchangebackend.dto.CurrencyExchangeDto;
 import com.kodilla.onlinecurrencyexchangebackend.dto.nbp.RateDto;
+import com.kodilla.onlinecurrencyexchangebackend.error.auth.InvalidTokenException;
 import com.kodilla.onlinecurrencyexchangebackend.error.currency.CurrencyNotFoundException;
 import com.kodilla.onlinecurrencyexchangebackend.error.currency.CurrencyObservableNotFoundException;
+import com.kodilla.onlinecurrencyexchangebackend.error.user.UserNotFoundException;
 import com.kodilla.onlinecurrencyexchangebackend.error.user.UserNotLoggedInException;
 import com.kodilla.onlinecurrencyexchangebackend.mapper.CurrencyMapper;
 import com.kodilla.onlinecurrencyexchangebackend.observer.CurrencyObservable;
@@ -67,16 +70,30 @@ public class CurrencyService {
         }
     }
 
-    public void unsubscribeUserFromCurrency(String currencyCode, String token) {
+    public void unsubscribeUserFromCurrencyViaWebsite(String currencyCode, String token) {
         String username = jwtService.extractUsername(token);
         var user = userRepository.findByUsername(username).orElseThrow(UserNotLoggedInException::new);
+        unsubscribeFromCurrency(currencyCode, user);
+    }
+
+    public void unsubscribeUserFromCurrencyViaEmail(String currencyCode, String token) {
+        if (!jwtService.isTokenValidForOperation(token, "unsubscribe")) {
+            throw new InvalidTokenException();
+        }
+        String username = jwtService.extractUsername(token);
+        var user = userRepository.findByUsername(username).orElseThrow(UserNotFoundException::new);
+        unsubscribeFromCurrency(currencyCode, user);
+    }
+
+    private void unsubscribeFromCurrency(String currencyCode, User user) {
+
         Currency currency = currencyRepository.findByCode(currencyCode).orElseThrow(CurrencyNotFoundException::new);
         if (user.getSubscribedCurrencies().contains(currency)) {
             user.getSubscribedCurrencies().remove(currency);
             currency.getSubscribedUsers().remove(user);
             userRepository.save(user);
             currencyRepository.save(currency);
-            log.info(USER_UNSUBSCRIBED_FROM_CURRENCY, username, currencyCode);
+            log.info(USER_UNSUBSCRIBED_FROM_CURRENCY, user.getUsername(), currencyCode);
         }
     }
 
@@ -86,7 +103,7 @@ public class CurrencyService {
         }
         String username = jwtService.extractUsername(token);
         var user = userRepository.findByUsername(username).orElseThrow(UserNotLoggedInException::new);
-        UserObserver observer = new UserObserver(user.getEmail(), currencyCode, threshold, aboveThreshold);
+        UserObserver observer = new UserObserver(user.getEmail(), user.getUsername(), currencyCode, threshold, aboveThreshold, user);
         double currentRate = currencyExchangeService.getLatestRate(currencyCode);
         CurrencyObservable currencyObservable = currencyObservables.computeIfAbsent(currencyCode, code -> new CurrencyObservable(code, currentRate));
 
@@ -97,10 +114,23 @@ public class CurrencyService {
         log.info(CURRENCY_OBSERVER_SUBSCRIBED, user.getEmail(), currencyCode);
     }
 
-    public void unsubscribeObserverFromCurrency(String currencyCode, String token) {
+
+    public void unsubscribeObserverFromCurrencyViaWebsite(String currencyCode, String token) {
         String username = jwtService.extractUsername(token);
         var user = userRepository.findByUsername(username).orElseThrow(UserNotLoggedInException::new);
+        unsubscribeObserverFromCurrency(currencyCode, user);
+    }
 
+    public void unsubscribeObserverFromCurrencyViaEmail(String currencyCode, String token) {
+        if (!jwtService.isTokenValidForOperation(token, "unsubscribe")) {
+            throw new InvalidTokenException();
+        }
+        String username = jwtService.extractUsername(token);
+        var user = userRepository.findByUsername(username).orElseThrow(UserNotFoundException::new);
+        unsubscribeObserverFromCurrency(currencyCode, user);
+    }
+
+    private void unsubscribeObserverFromCurrency(String currencyCode, User user) {
         CurrencyObservable currencyObservable = currencyObservables.get(currencyCode);
         if (currencyObservable == null) {
             throw new CurrencyObservableNotFoundException(currencyCode);
@@ -116,6 +146,8 @@ public class CurrencyService {
         if (observerToRemove != null) {
             currencyObservable.removeObserver(observerToRemove);
             log.info(CURRENCY_OBSERVER_UNSUBSCRIBED, user.getEmail(), currencyCode);
+        } else {
+            log.warn(CURRENCY_OBSERVER_NOTFOUND, user.getUsername(), currencyCode);
         }
     }
 

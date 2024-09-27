@@ -73,6 +73,11 @@ public class GlobalHttpErrorHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>("Invalid verification token.", HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(InvalidTokenException.class)
+    public ResponseEntity<Object> handleInvalidTokenException(InvalidTokenException ex) {
+        return new ResponseEntity<>("Invalid token.", HttpStatus.FORBIDDEN);
+    }
+
     @ExceptionHandler(InvalidAuthorizationHeaderException.class)
     public ResponseEntity<Object> handleInvalidAuthorizationHeaderException(InvalidAuthorizationHeaderException ex) {
         return new ResponseEntity<>("Invalid or missing Authorization header.", HttpStatus.BAD_REQUEST);

@@ -125,6 +125,12 @@ public class UserService {
                 .build();
     }
 
+    public User findUserEntityByUsername(String username) {
+        log.info(FIND_USER_BY_USERNAME, username);
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException());
+    }
+
     public List<UserDetailResponse> getAllUsers() {
         log.info(FETCHING_ALL_USERS);
         List<User> users = userRepository.findAll();

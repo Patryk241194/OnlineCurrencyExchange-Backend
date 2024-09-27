@@ -3,6 +3,7 @@ package com.kodilla.onlinecurrencyexchangebackend.service.nbp;
 import com.kodilla.onlinecurrencyexchangebackend.dto.CurrencyExchangeDto;
 import com.kodilla.onlinecurrencyexchangebackend.dto.user.UserDetailResponse;
 import com.kodilla.onlinecurrencyexchangebackend.observer.UserObserver;
+import com.kodilla.onlinecurrencyexchangebackend.security.jwt.JwtService;
 import com.kodilla.onlinecurrencyexchangebackend.service.domain.CurrencyExchangeService;
 import com.kodilla.onlinecurrencyexchangebackend.service.domain.UserService;
 import com.kodilla.onlinecurrencyexchangebackend.service.email.EmailService;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -25,11 +27,11 @@ import static com.kodilla.onlinecurrencyexchangebackend.security.log.LogMessages
 @RequiredArgsConstructor
 @EnableScheduling
 public class NBPEmailService {
-
     private final EmailService emailService;
     private final UserService userService;
     private final CurrencyExchangeService currencyExchangeService;
     private final MailCreatorService mailCreatorService;
+    private final JwtService jwtService;
 
     @Scheduled(cron = "0 5 13 ? * MON-FRI")
     public void sendDailyCurrencyRates() {
@@ -39,8 +41,10 @@ public class NBPEmailService {
         for (UserDetailResponse user : users) {
             List<CurrencyExchangeDto> userRates = filterRatesForUser(allRates, user.getSubscribedCurrencies());
             if (!userRates.isEmpty()) {
+                var userEntity = userService.findUserEntityByUsername(user.getUsername());
+                String unsubscribeToken = jwtService.generateUnsubscribeToken(userEntity);
                 String subject = createEmailSubject(user.getSubscribedCurrencies());
-                String emailContent = mailCreatorService.buildDailyCurrencyEmail(user.getUsername(), userRates);
+                String emailContent = mailCreatorService.buildDailyCurrencyEmail(user.getUsername(), userRates, unsubscribeToken);
                 Mail mail = Mail.builder()
                         .mailTo(user.getEmail())
                         .subject(subject)
@@ -53,15 +57,16 @@ public class NBPEmailService {
     }
 
     public void notifyObserver(UserObserver observer, double currentRate) {
-        String subject = "Currency Alert: " + observer.getCurrencyCode();
-        String message = "The rate for " + observer.getCurrencyCode() + " has reached " + currentRate + ".";
+        String subject = createEmailAlertSubject(observer);
+        String unsubscribeToken = jwtService.generateUnsubscribeToken(observer.getUserEntity());
+        String emailContent = mailCreatorService.buildCurrencyAlertEmail(observer, currentRate, unsubscribeToken);
         Mail mail = Mail.builder()
                 .mailTo(observer.getEmail())
                 .subject(subject)
-                .message(message)
+                .message(emailContent)
                 .build();
+        log.info(PREPARING_EMAIL_LOG, observer.getUsername());
         emailService.send(mail);
-        log.info("Sent email to {}: {}", observer.getEmail(), message);
     }
 
     private List<CurrencyExchangeDto> filterRatesForUser(List<CurrencyExchangeDto> allRates, List<String> subscribedCurrencies) {
@@ -74,12 +79,8 @@ public class NBPEmailService {
         return "Daily Currency Exchange Rates for " + String.join(", ", subscribedCurrencies);
     }
 
-    private String generateEmailTemplate(List<CurrencyExchangeDto> rates) {
-        StringBuilder messageBuilder = new StringBuilder("Here are your daily currency exchange rates:\n\n");
-        for (CurrencyExchangeDto rate : rates) {
-            messageBuilder.append(rate.toString()).append("\n");
-        }
-        return messageBuilder.toString();
+    private static String createEmailAlertSubject(UserObserver observer) {
+        return "Currency Alert: " + observer.getCurrencyCode();
     }
 
 }

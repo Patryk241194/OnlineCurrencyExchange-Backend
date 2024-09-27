@@ -60,6 +60,7 @@ public class LogMessages {
     public static final String USER_UNSUBSCRIBED_FROM_CURRENCY = "User with username: {} unsubscribed from currency: {}";
     public static final String CURRENCY_OBSERVER_SUBSCRIBED = "Observer added for user with email: {} for currency: {}";
     public static final String CURRENCY_OBSERVER_UNSUBSCRIBED = "Observer removed for user with email: {} for currency: {}";
+    public static final String CURRENCY_OBSERVER_NOTFOUND = "Observer not found for user {} and currency {}";
     public static final String CURRENCY_UPDATE_STARTED = "Starting scheduled currency update.";
     public static final String CURRENCY_UPDATE_COMPLETED = "Currency update completed.";
 
